@@ -39,5 +39,6 @@ yarn-error.log*
 
 # VSCode
 .vscode/*
+
 # Assignment
-docs/assignment.pdf
+docs/assignment.txt
