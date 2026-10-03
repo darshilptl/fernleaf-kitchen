@@ -1,0 +1,42 @@
+{
+  "extends": "@repo/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@repo/ui": ["../../packages/ui/src/index.ts"],
+      "@repo/ui/*": ["../../packages/ui/src/*.tsx"],
+      "@repo/ui/components": ["../../packages/ui/src/components/index.ts"],
+      "@repo/ui/components/*": ["../../packages/ui/src/components/*.tsx"],
+      "@repo/ui/components/ui": [
+        "../../packages/ui/src/components/ui/index.ts"
+      ],
+      "@repo/ui/components/ui/*": ["../../packages/ui/src/components/ui/*.tsx"],
+      "@repo/ui/lib": ["../../packages/ui/src/lib/index.ts"],
+      "@repo/ui/lib/*": ["../../packages/ui/src/lib/*.ts"],
+      "@repo/ui/hooks": ["../../packages/ui/src/hooks/index.ts"],
+      "@repo/ui/hooks/*": ["../../packages/ui/src/hooks/*.ts"],
+      "@repo/validators": ["../../packages/validators/src/index.ts"],
+      "@repo/validators/*": ["../../packages/validators/src/*"],
+      "@repo/types": ["../../packages/types/src/index.ts"],
+      "@repo/db": ["../../packages/db/src/index.ts"],
+      "@repo/auth": ["../../packages/auth/src/index.ts"],
+      "@repo/email": ["../../packages/email/src/index.ts"],
+      "@repo/ai": ["../../packages/ai/src/index.ts"]
+    },
+    "strictNullChecks": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    "next.config.js",
+    ".next/types/**/*.ts",
+    "postcss.config.mjs"
+  ],
+  "exclude": ["node_modules"]
+}
