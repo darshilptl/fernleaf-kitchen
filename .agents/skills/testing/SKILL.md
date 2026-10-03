@@ -7,16 +7,17 @@ description: Use when writing or running any test. Defines runners, the real-dat
 
 ## Runners and layout
 
-- `packages/shared`: Vitest, pure functions, no database. Files `*.spec.ts` beside the code.
-- `apps/api`: Jest (Nest default). Domain functions: pure unit tests. Services: integration tests on a REAL Postgres.
-- No UI tests required. Frontend gate is `tsc` and `lint`.
+- Vitest everywhere (`apps/api` and `packages/shared`). Files `*.spec.ts` beside the code.
+- Domain functions: pure unit tests. Services: integration tests on a REAL Postgres.
+- Construct services directly in tests (`new XService(prisma, clock)`). Do NOT use `@nestjs/testing` or Nest DI in Vitest
+  (esbuild does not emit decorator metadata).
 
 ## Real database rule
 
-- `TEST_DATABASE_URL` points to a disposable Postgres (Docker, port 5433). NEVER the live database.
-- Global setup: `prisma migrate deploy` (applies init AND the constraints migration). Before each test file:
-  `TRUNCATE ... RESTART IDENTITY CASCADE` on all business tables, then re-ensure the settings row and reference data.
-- Never mock Prisma. Mocks cannot prove locks, constraints or conditional updates.
+- `TEST_DATABASE_URL` is a separate Supabase project used only for tests. Setup throws if it equals `DATABASE_URL`. Do this if brutal needs and inform before using it.
+- Global setup runs `prisma migrate deploy` (init AND constraints migrations). Before each test file TRUNCATE all
+  business tables with RESTART IDENTITY CASCADE, then re-ensure the settings row and reference data.
+- Time: `pnpm test:tz` runs Vitest under TZ=UTC and TZ=America/Los_Angeles (use `cross-env` on Windows).
 
 ## Time
 
