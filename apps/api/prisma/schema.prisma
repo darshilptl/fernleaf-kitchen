@@ -1,0 +1,734 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ════════════════════════════ ENUMS ════════════════════════════
+
+enum Temperature {
+  HOT
+  COLD
+}
+
+enum PriceBasis {
+  COST
+  TIER
+}
+
+enum OrderStatus {
+  DRAFT
+  PLACED
+  CONFIRMED
+  DELIVERED
+  CANCELLED
+  REJECTED
+}
+
+enum OrderEventType {
+  CREATED
+  PLACED
+  EDITED
+  CONFIRMED
+  CANCELLED
+  REJECTED
+  DETAILS_OVERRIDDEN
+  KITCHEN_STARTED
+  KITCHEN_READY
+  FORCE_COMPLETED
+  DISPATCH_READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+}
+
+// ═══════════════ BLOCK 1: STAFF, ROLES, PERMISSIONS ═══════════════
+
+model Role {
+  id          String   @id @default(uuid())
+  key         String   @unique // seeding/identification only, NEVER used in authorization checks
+  name        String
+  description String?
+  landingPath String
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  staff       StaffUser[]
+
+  @@map("roles")
+}
+
+model RolePermission {
+  roleId     String
+  permission String // key from packages/shared PERMISSIONS
+  role       Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permission])
+  @@map("role_permissions")
+}
+
+model StaffUser {
+  id           String   @id @default(uuid())
+  email        String   @unique // lowercase
+  name         String
+  passwordHash String
+  roleId       String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  defaultForCompanies Company[]      @relation("CompanyDefaultDriver")
+  createdOrders       Order[]        @relation("OrderCreatedBy")
+  driverOrders        Order[]        @relation("OrderDriver")
+  orderEvents         OrderEvent[]   @relation("OrderEventActor")
+  createdInvoices     Invoice[]      @relation("InvoiceCreatedBy")
+  paidInvoices        Invoice[]      @relation("InvoicePaidBy")
+
+  @@index([roleId])
+  @@map("staff_users")
+}
+
+// ═══════════════ BLOCK 2: REFERENCE DATA AND CATALOGUE ═══════════════
+
+model Allergen {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dishes    DishAllergen[]
+  options   OptionAllergen[]
+  employees EmployeeAllergen[]
+
+  @@map("allergens")
+}
+
+model DietaryTag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dishes    DishDietaryTag[]
+  options   OptionDietaryTag[]
+  employees EmployeeDietaryTag[]
+
+  @@map("dietary_tags")
+}
+
+model KitchenStation {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dishes Dish[]
+
+  @@map("kitchen_stations")
+}
+
+model PortionSize {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  groupSizes  OptionGroupPortion[]
+  supportedBy OptionPortion[]
+
+  @@map("portion_sizes")
+}
+
+model Dish {
+  id               String      @id @default(uuid())
+  name             String
+  description      String?
+  imageUrl         String?
+  sku              String      @unique // internal only
+  temperature      Temperature
+  costCents        Int
+  stationId        String?
+  minOrderQuantity Int?
+  isActive         Boolean     @default(true) // deactivate, never hard-delete
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  station      KitchenStation?  @relation(fields: [stationId], references: [id], onDelete: Restrict)
+  allergens    DishAllergen[]
+  dietaryTags  DishDietaryTag[]
+  optionGroups OptionGroup[]
+  tierPrices   DishTierPrice[]
+  menuItems    MenuItem[]
+  orderLines   OrderLine[]
+
+  @@index([stationId])
+  @@index([isActive])
+  @@map("dishes")
+}
+
+model DishAllergen {
+  dishId     String
+  allergenId String
+  dish       Dish     @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  allergen   Allergen @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+
+  @@id([dishId, allergenId])
+  @@map("dish_allergens")
+}
+
+model DishDietaryTag {
+  dishId String
+  tagId  String
+  dish   Dish       @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  tag    DietaryTag @relation(fields: [tagId], references: [id], onDelete: Restrict)
+
+  @@id([dishId, tagId])
+  @@map("dish_dietary_tags")
+}
+
+model Option {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  costCents   Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  allergens    OptionAllergen[]
+  dietaryTags  OptionDietaryTag[]
+  portions     OptionPortion[]
+  groupLinks   OptionGroupOption[]
+  tierPrices   OptionTierPrice[]
+  orderChoices OrderCombinationChoice[]
+
+  @@map("options")
+}
+
+model OptionAllergen {
+  optionId   String
+  allergenId String
+  option     Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  allergen   Allergen @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+
+  @@id([optionId, allergenId])
+  @@map("option_allergens")
+}
+
+model OptionDietaryTag {
+  optionId String
+  tagId    String
+  option   Option     @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  tag      DietaryTag @relation(fields: [tagId], references: [id], onDelete: Restrict)
+
+  @@id([optionId, tagId])
+  @@map("option_dietary_tags")
+}
+
+// An option supports a portion size
+model OptionPortion {
+  optionId      String
+  portionSizeId String
+  option        Option      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  portionSize   PortionSize @relation(fields: [portionSizeId], references: [id], onDelete: Restrict)
+
+  @@id([optionId, portionSizeId])
+  @@map("option_portions")
+}
+
+// Belongs to exactly one dish. Single choice per group.
+model OptionGroup {
+  id           String   @id @default(uuid())
+  dishId       String
+  name         String
+  isRequired   Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  usesPortions Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  dish    Dish                 @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  options OptionGroupOption[]
+  sizes   OptionGroupPortion[]
+
+  @@index([dishId, sortOrder])
+  @@map("option_groups")
+}
+
+model OptionGroupOption {
+  groupId   String
+  optionId  String
+  sortOrder Int         @default(0)
+  group     OptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  option    Option      @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@id([groupId, optionId])
+  @@index([groupId, sortOrder])
+  @@map("option_group_options")
+}
+
+model OptionGroupPortion {
+  groupId          String
+  portionSizeId    String
+  sortOrder        Int         @default(0)
+  extraChargeCents Int         @default(0)
+  group            OptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  portionSize      PortionSize @relation(fields: [portionSizeId], references: [id], onDelete: Restrict)
+
+  @@id([groupId, portionSizeId])
+  @@map("option_group_portions")
+}
+
+// ═══════════════ BLOCK 3: PRICING ═══════════════
+
+model PriceTier {
+  id              String      @id @default(uuid())
+  name            String      @unique
+  isDefault       Boolean     @default(false)
+  isActive        Boolean     @default(true)
+  derivationBasis PriceBasis?
+  sourceTierId    String?
+  multiplierBp    Int? // 10000 = x1.00, 24000 = x2.4, 11500 = +15%
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  sourceTier   PriceTier?       @relation("TierDerivation", fields: [sourceTierId], references: [id], onDelete: Restrict)
+  derivedTiers PriceTier[]      @relation("TierDerivation")
+  dishPrices   DishTierPrice[]
+  optionPrices OptionTierPrice[]
+  companies    Company[]
+
+  @@map("price_tiers")
+}
+
+model DishTierPrice {
+  tierId     String
+  dishId     String
+  priceCents Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tier PriceTier @relation(fields: [tierId], references: [id], onDelete: Restrict)
+  dish Dish      @relation(fields: [dishId], references: [id], onDelete: Restrict)
+
+  @@id([tierId, dishId])
+  @@index([dishId])
+  @@map("dish_tier_prices")
+}
+
+model OptionTierPrice {
+  tierId     String
+  optionId   String
+  priceCents Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tier   PriceTier @relation(fields: [tierId], references: [id], onDelete: Restrict)
+  option Option    @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@id([tierId, optionId])
+  @@index([optionId])
+  @@map("option_tier_prices")
+}
+
+// ═══════════════ BLOCK 4: COMPANIES AND EMPLOYEES ═══════════════
+
+model PackagingType {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companies Company[]
+  orders    Order[]
+
+  @@map("packaging_types")
+}
+
+model Company {
+  id       String  @id @default(uuid())
+  name     String
+  isActive Boolean @default(true)
+
+  billingContactName String
+  billingEmail       String
+  billingPhone       String?
+  billingAddress     String?
+
+  ownerEmployeeId String? @unique
+  priceTierId     String?
+
+  workingDays Int[] @default([1, 2, 3, 4, 5]) // ISO: 1 = Monday ... 7 = Sunday
+
+  defaultDeliveryMinute  Int // minutes after midnight, kitchen time zone
+  dispatchLeadMinutes    Int     @default(60)
+  defaultPackagingTypeId String
+  driverInstructions     String?
+  defaultDriverId        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner            Employee?     @relation("CompanyOwner", fields: [ownerEmployeeId], references: [id], onDelete: Restrict)
+  priceTier        PriceTier?    @relation(fields: [priceTierId], references: [id], onDelete: Restrict)
+  defaultPackaging PackagingType @relation(fields: [defaultPackagingTypeId], references: [id], onDelete: Restrict)
+  defaultDriver    StaffUser?    @relation("CompanyDefaultDriver", fields: [defaultDriverId], references: [id], onDelete: Restrict)
+
+  employees        Employee[]              @relation("CompanyEmployees")
+  domains          CompanyEmailDomain[]
+  addresses        CompanyAddress[]
+  holidays         CompanyHoliday[]
+  hiddenCategories CompanyHiddenCategory[]
+  hiddenItems      CompanyHiddenItem[]
+  orders           Order[]
+  invoices         Invoice[]
+
+  @@index([isActive])
+  @@index([priceTierId])
+  @@index([defaultDriverId])
+  @@map("companies")
+}
+
+model CompanyEmailDomain {
+  id        String   @id @default(uuid())
+  companyId String
+  domain    String   @unique // lowercase, no "@"
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@index([companyId])
+  @@map("company_email_domains")
+}
+
+model CompanyAddress {
+  id         String   @id @default(uuid())
+  companyId  String
+  label      String
+  line1      String
+  line2      String?
+  city       String
+  region     String?
+  postalCode String
+  country    String
+  isDefault  Boolean  @default(false)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  orders  Order[]
+
+  @@index([companyId, isActive])
+  @@map("company_addresses")
+}
+
+model CompanyHoliday {
+  id        String   @id @default(uuid())
+  companyId String
+  date      DateTime @db.Date
+  name      String?
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, date])
+  @@map("company_holidays")
+}
+
+model Employee {
+  id        String  @id @default(uuid())
+  companyId String
+  name      String
+  email     String  @unique // lowercase
+  isActive  Boolean @default(true)
+
+  canChooseAddress      Boolean @default(false)
+  canChangeDeliveryTime Boolean @default(false)
+  canChangePackaging    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company            Company              @relation("CompanyEmployees", fields: [companyId], references: [id], onDelete: Restrict)
+  ownedCompany       Company?             @relation("CompanyOwner")
+  allergies          EmployeeAllergen[]
+  dietaryPreferences EmployeeDietaryTag[]
+  orders             Order[]
+
+  @@index([companyId, isActive])
+  @@map("employees")
+}
+
+model EmployeeAllergen {
+  employeeId String
+  allergenId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  allergen   Allergen @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+
+  @@id([employeeId, allergenId])
+  @@map("employee_allergens")
+}
+
+model EmployeeDietaryTag {
+  employeeId String
+  tagId      String
+  employee   Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  tag        DietaryTag @relation(fields: [tagId], references: [id], onDelete: Restrict)
+
+  @@id([employeeId, tagId])
+  @@map("employee_dietary_tags")
+}
+
+// ═══════════════ BLOCK 5: MENU ═══════════════
+
+model MenuCategory {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  isSecret    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items     MenuItem[]
+  hiddenFor CompanyHiddenCategory[]
+
+  @@index([isActive, sortOrder])
+  @@map("menu_categories")
+}
+
+model MenuItem {
+  id         String   @id @default(uuid())
+  categoryId String
+  dishId     String
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category  MenuCategory        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  dish      Dish                @relation(fields: [dishId], references: [id], onDelete: Restrict)
+  hiddenFor CompanyHiddenItem[]
+
+  @@unique([categoryId, dishId])
+  @@index([dishId])
+  @@index([categoryId, sortOrder])
+  @@map("menu_items")
+}
+
+model CompanyHiddenCategory {
+  companyId  String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  company  Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, categoryId])
+  @@index([categoryId])
+  @@map("company_hidden_categories")
+}
+
+model CompanyHiddenItem {
+  companyId  String
+  menuItemId String
+  createdAt  DateTime @default(now())
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, menuItemId])
+  @@index([menuItemId])
+  @@map("company_hidden_items")
+}
+
+// ═══════════════ BLOCK 6: SETTINGS AND KITCHEN CALENDAR ═══════════════
+
+// Exactly one row (id = 1)
+model PlatformSettings {
+  id                 Int      @id @default(1)
+  kitchenWorkingDays Int[]    @default([1, 2, 3, 4, 5])
+  cutoffTimeMinute   Int // minutes after midnight, kitchen time zone
+  cutoffWorkingDays  Int
+  atRiskMinutes      Int      @default(30)
+  updatedAt          DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+model KitchenHoliday {
+  id        String   @id @default(uuid())
+  date      DateTime @unique @db.Date
+  name      String?
+  createdAt DateTime @default(now())
+
+  @@map("kitchen_holidays")
+}
+
+// ═══════════════ BLOCKS 7-9: ORDERS, KITCHEN, DISPATCH ═══════════════
+
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber Int         @unique @default(autoincrement())
+  status      OrderStatus @default(DRAFT)
+  version     Int         @default(0)
+
+  employeeId  String
+  companyId   String
+  createdById String
+
+  deliveryDate       DateTime @db.Date
+  deliveryTimeMinute Int
+  addressId          String
+  packagingTypeId    String
+
+  totalCents Int @default(0)
+
+  // Block 8: kitchen
+  kitchenStartedAt DateTime?
+  kitchenReadyAt   DateTime?
+
+  // Block 9: dispatch and delivery
+  dispatchReadyAt  DateTime?
+  outForDeliveryAt DateTime?
+  deliveredAt      DateTime?
+  driverId         String?
+  deliveryNote     String?
+  deliveryPhotoUrl String?
+  deliveredOnTime  Boolean?
+
+  // Block 10: billing
+  invoiceId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee      Employee       @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  createdBy     StaffUser      @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  address       CompanyAddress @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  packagingType PackagingType  @relation(fields: [packagingTypeId], references: [id], onDelete: Restrict)
+  driver        StaffUser?     @relation("OrderDriver", fields: [driverId], references: [id], onDelete: Restrict)
+  invoice       Invoice?       @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  lines  OrderLine[]
+  events OrderEvent[]
+
+  @@index([deliveryDate, status])
+  @@index([companyId, deliveryDate])
+  @@index([employeeId, deliveryDate])
+  @@index([driverId, deliveryDate])
+  @@index([invoiceId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderLine {
+  id             String @id @default(uuid())
+  orderId        String
+  dishId         String
+  dishName       String // snapshot
+  dishPriceCents Int // snapshot
+  quantity       Int // equals the sum of combination quantities
+  lineTotalCents Int
+  sortOrder      Int    @default(0)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  dish  Dish  @relation(fields: [dishId], references: [id], onDelete: Restrict)
+
+  combinations OrderLineCombination[]
+
+  @@unique([orderId, dishId])
+  @@index([dishId])
+  @@map("order_lines")
+}
+
+// One distinct combination = one kitchen prep unit
+model OrderLineCombination {
+  id             String @id @default(uuid())
+  lineId         String
+  comboKey       String // canonical sorted "groupId:optionId:sizeId|..." ("" if the dish has no groups)
+  quantity       Int
+  unitPriceCents Int
+  totalCents     Int
+
+  // Block 8: prep unit state
+  startedAt DateTime?
+  doneAt    DateTime?
+
+  line    OrderLine                @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  choices OrderCombinationChoice[]
+
+  @@unique([lineId, comboKey])
+  @@map("order_line_combinations")
+}
+
+model OrderCombinationChoice {
+  id                String  @id @default(uuid())
+  combinationId     String
+  groupName         String // snapshot
+  optionId          String
+  optionName        String // snapshot
+  portionSizeName   String? // snapshot
+  optionPriceCents  Int
+  portionExtraCents Int     @default(0)
+
+  combination OrderLineCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  option      Option               @relation(fields: [optionId], references: [id], onDelete: Restrict)
+
+  @@index([combinationId])
+  @@map("order_combination_choices")
+}
+
+model OrderEvent {
+  id        String         @id @default(uuid())
+  orderId   String
+  type      OrderEventType
+  actorId   String? // null = system
+  note      String?
+  createdAt DateTime       @default(now())
+
+  order Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  actor StaffUser? @relation("OrderEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([orderId, createdAt])
+  @@map("order_events")
+}
+
+// ═══════════════ BLOCK 10: BILLING ═══════════════
+
+model Invoice {
+  id            String    @id @default(uuid())
+  invoiceNumber Int       @unique @default(autoincrement())
+  companyId     String
+  createdById   String
+  totalCents    Int // frozen at creation, always equals the sum of its orders' totals
+  paidAt        DateTime? // null = unpaid
+  paidById      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  createdBy StaffUser @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  paidBy    StaffUser? @relation("InvoicePaidBy", fields: [paidById], references: [id], onDelete: Restrict)
+  orders    Order[]
+
+  @@index([companyId, paidAt])
+  @@map("invoices")
+}
