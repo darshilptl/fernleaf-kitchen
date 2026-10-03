@@ -1,0 +1,20 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "strictNullChecks": true,
+    "paths": {
+      "@repo/ui": ["./src/index.ts"],
+      "@repo/ui/components": ["./src/components/index.ts"],
+      "@repo/ui/components/*": ["./src/components/*.tsx"],
+      "@repo/ui/components/ui": ["./src/components/ui/index.ts"],
+      "@repo/ui/components/ui/*": ["./src/components/ui/*.tsx"],
+      "@repo/ui/lib": ["./src/lib/index.ts"],
+      "@repo/ui/lib/*": ["./src/lib/*.ts"],
+      "@repo/ui/hooks": ["./src/hooks/index.ts"],
+      "@repo/ui/hooks/*": ["./src/hooks/*.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
