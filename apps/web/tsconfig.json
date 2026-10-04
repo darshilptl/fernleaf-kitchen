@@ -19,14 +19,7 @@
       "@repo/ui/lib": ["../../packages/ui/src/lib/index.ts"],
       "@repo/ui/lib/*": ["../../packages/ui/src/lib/*.ts"],
       "@repo/ui/hooks": ["../../packages/ui/src/hooks/index.ts"],
-      "@repo/ui/hooks/*": ["../../packages/ui/src/hooks/*.ts"],
-      "@repo/validators": ["../../packages/validators/src/index.ts"],
-      "@repo/validators/*": ["../../packages/validators/src/*"],
-      "@repo/types": ["../../packages/types/src/index.ts"],
-      "@repo/db": ["../../packages/db/src/index.ts"],
-      "@repo/auth": ["../../packages/auth/src/index.ts"],
-      "@repo/email": ["../../packages/email/src/index.ts"],
-      "@repo/ai": ["../../packages/ai/src/index.ts"]
+      "@repo/ui/hooks/*": ["../../packages/ui/src/hooks/*.ts"]
     },
     "strictNullChecks": true
   },

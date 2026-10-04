@@ -2,8 +2,9 @@ import type { Metadata } from "next"
 import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
-import { ThemeProvider } from "@/providers/theme-provider"
 import Navbar from "@/components/Navbar"
+import { Toaster } from "@repo/ui/components/ui/toast"
+import { ThemeProvider } from "@/providers/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           <Navbar />
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

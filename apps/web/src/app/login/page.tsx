@@ -1,11 +1,24 @@
-import { LoginForm } from "@/components/sections/login-form"
+import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
+import { LoginForm } from '@/components/sections/login-form';
+import { loadStaffSession } from '@/lib/staff-session';
+import { QueryProvider } from '@/providers/query-provider';
 
-export default function LoginPage() {
+/** Signed-in staff skip login and land on their role dashboard. */
+export default async function LoginPage(): Promise<React.JSX.Element> {
+  const session = await loadStaffSession();
+  if (session !== null) {
+    redirect(session.landingPath);
+  }
   return (
     <div className="flex flex-1 items-center justify-center gap-6 bg-background p-6 md:p-20">
       <div className="w-full max-w-sm">
-        <LoginForm />
+        <QueryProvider>
+          <Suspense>
+            <LoginForm />
+          </Suspense>
+        </QueryProvider>
       </div>
     </div>
-  )
+  );
 }
