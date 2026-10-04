@@ -85,6 +85,10 @@ Format: ID, PDF section, ambiguity, decision, why, alternative.
 | D-78 | 3         | Staff password minimum length                         | Minimum 8 characters on staff creation                                                                | PDF silent; `Test@1234` sets the bar; login stays format-only (min 1) so wrong passwords cannot be probed | No minimum                 |
 | D-79 | 2, 3      | Seed accounts drift (password/role changed by hand)   | The four seed accounts are re-asserted on every boot: password, role, active | Reviewer logins always work; settings row stays insert-if-missing so cut-off edits survive | Seed once only             |
 | D-80 | 5 | Console action logging without audit tables | Nest built-in Logger via one global interceptor (method, path, status, duration, actor id or `anon`) plus `logAction(logger, name, fields)` on state-changing domain actions; never passwords, tokens, cookies, bodies, hashes, or emails | PDF allows console logging; audit logs out of scope | Persisted audit logs |
+| D-88 | 4.6 | Minimum fields to create a draft | `employeeId` + `deliveryDate` required; details default from company; lines optional | Least inventive; matches "staff create an order for an employee" + D-57 | Allow dateless drafts |
+| D-89 | 4.6 | Order search scope | orderNumber, employee name/email, company name | Literal skill list; covers reviewer lookup | Full-text everything |
+| D-90 | 4.6 | Manual cut-off trigger scope | Processes every past-cutoff date with Draft/Placed rows, returns counts | Matches "safe to run twice" + reviewer try-it use | Single-date param |
+| D-91 | 4.6 | Reject reason length | Non-empty string, ≤500 chars, required | Skill says reason required; minimal constraint | Free-form unlimited |
 
 ## Amendments applied after the first audit (A-1 to A-8)
 
