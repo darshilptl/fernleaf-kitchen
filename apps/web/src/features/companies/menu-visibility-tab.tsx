@@ -44,9 +44,9 @@ export function MenuVisibilityTab({ companyId }: { companyId: string }): React.J
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="heading-sm">Hidden categories</h2>
           <Button
             size="sm"
@@ -68,8 +68,8 @@ export function MenuVisibilityTab({ companyId }: { companyId: string }): React.J
           </label>
         ))}
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="heading-sm">Hidden dish placements</h2>
           <Button size="sm" disabled={savingItems} onClick={() => saveItems([...hiddenItems])}>
             Save placements

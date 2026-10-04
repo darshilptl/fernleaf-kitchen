@@ -35,9 +35,9 @@ export function CompanyAddressesTab({ companyId }: { companyId: string }): React
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="heading-sm">Addresses</h2>
           <Button size="sm" onClick={() => setShowAddress((open) => !open)}>
             {showAddress ? 'Close' : 'Add address'}
@@ -46,7 +46,7 @@ export function CompanyAddressesTab({ companyId }: { companyId: string }): React
         {company.addresses.map((address) => (
           <div
             key={address.id}
-            className="flex items-center justify-between gap-4 rounded-lg bg-background-panel p-4 shadow-card"
+            className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-background-panel p-6 shadow-card"
           >
             <div className="flex flex-col gap-1">
               <p className="text-body-sm font-medium">
@@ -65,10 +65,10 @@ export function CompanyAddressesTab({ companyId }: { companyId: string }): React
         ))}
         {showAddress && <AddressForm companyId={companyId} />}
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
         <h2 className="heading-sm">Email domains</h2>
         {company.domains.map((row) => (
-          <div key={row.id} className="flex items-center justify-between gap-4">
+          <div key={row.id} className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-body-sm">{row.domain}</p>
             <Button variant="outline" size="sm" onClick={() => removeDomain(row.id)}>
               Remove
@@ -76,7 +76,7 @@ export function CompanyAddressesTab({ companyId }: { companyId: string }): React
           </div>
         ))}
         <form
-          className="flex items-center gap-2"
+          className="flex flex-wrap items-center gap-4"
           onSubmit={(event) => {
             event.preventDefault();
             if (domain.trim() !== '') {

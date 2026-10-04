@@ -13,10 +13,10 @@ import { TierList } from './tier-list';
 export function PricingWorkspace(): React.JSX.Element {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex min-w-0 flex-col gap-8">
       <TierList selectedId={selectedId} onSelect={setSelectedId} />
       {selectedId !== null && (
-        <div className="flex flex-col gap-8">
+        <div className="flex min-w-0 flex-col gap-8">
           <div className="rounded-lg bg-background-panel p-6 shadow-card">
             <h2 className="heading-sm mb-4">Derivation rule</h2>
             <RuleEditor tierId={selectedId} />

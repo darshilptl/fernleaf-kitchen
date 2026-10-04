@@ -15,8 +15,8 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
     redirect(session.landingPath);
   }
   return (
-    <div className="flex flex-col gap-4">
-      <div>
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-col gap-2">
         <h1 className="heading-sm">Settings</h1>
         <p className="description-sm">Kitchen calendar, cut-off and platform values.</p>
       </div>
