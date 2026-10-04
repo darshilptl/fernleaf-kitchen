@@ -1,7 +1,7 @@
-import React from "react";
-import { IconFolderCode } from "@tabler/icons-react";
-import { ArrowUpRightIcon } from "lucide-react";
-import { Button } from "@repo/ui/components/ui/button";
+import React from "react"
+import { IconFolderCode } from "@tabler/icons-react"
+import { ArrowUpRightIcon } from "lucide-react"
+import { Button } from "@repo/ui/components/ui/button"
 import {
   Empty,
   EmptyHeader,
@@ -9,15 +9,11 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@repo/ui/components/ui/empty";
+} from "@repo/ui/components/ui/empty"
 
-export default function() {
+export default function () {
   return (
     <>
-      <p>Welcome to the Home Section</p>
-      <br/>
-      <Button>Click me</Button>
-      <br />
       <Empty>
         <EmptyHeader>
           <EmptyMedia variant="icon">
@@ -46,5 +42,5 @@ export default function() {
         />
       </Empty>
     </>
-  );
+  )
 }
