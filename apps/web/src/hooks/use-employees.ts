@@ -39,6 +39,7 @@ export function useEmployees(companyId: string, page: number): {
     queryKey: [...EMPLOYEES_KEY, companyId, page],
     queryFn: () =>
       apiRequest<EmployeePage>(`/api/companies/${companyId}/employees?page=${page}&pageSize=20`),
+    enabled: companyId !== '',
   });
   return {
     data: query.data,

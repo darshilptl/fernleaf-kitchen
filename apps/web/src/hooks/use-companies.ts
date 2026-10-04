@@ -106,6 +106,7 @@ export function useCompany(id: string): {
   const query = useQuery({
     queryKey: [...COMPANIES_KEY, 'detail', id],
     queryFn: () => apiRequest<CompanyDetail>(`/api/companies/${id}`),
+    enabled: id !== '',
   });
   return { company: query.data, isLoading: query.isLoading, isError: query.isError };
 }
