@@ -1,6 +1,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { GITHUB_URL } from "@/lib/site"
+import { getApiHealth } from "@/lib/api-health"
 
 const FOOTER_COLUMNS = [
   {
@@ -8,7 +10,7 @@ const FOOTER_COLUMNS = [
     links: [
       {
         label: "GitHub",
-        href: "https://github.com/darshilptl/fernleaf-kitchen",
+        href: GITHUB_URL,
         external: true,
       },
       {
@@ -24,7 +26,7 @@ const FOOTER_COLUMNS = [
       { label: "Admin", href: "/admin/dashboard", external: false },
       { label: "Kitchen", href: "/kitchen/dashboard", external: false },
       { label: "Dispatch", href: "/dispatch/dashboard", external: false },
-      { label: "Driver", href: "/driver/dashboard", external: false },
+      { label: "Driver", href: "/driver", external: false },
     ],
   },
 ] as const
@@ -56,7 +58,7 @@ type FooterColumnProps = {
 function FooterColumn({ heading, links }: FooterColumnProps) {
   return (
     <div>
-      <p className="text-subtle-foreground text-xs font-bold tracking-wider uppercase">
+      <p className="text-caption font-semibold uppercase text-foreground-subtle">
         {heading}
       </p>
       <ul className="mt-2 space-y-2">
@@ -67,14 +69,14 @@ function FooterColumn({ heading, links }: FooterColumnProps) {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="text-sm text-foreground-muted hover:text-foreground"
               >
                 {link.label}
               </a>
             ) : (
               <Link
                 href={link.href}
-                className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                className="text-sm text-foreground-muted hover:text-foreground"
               >
                 {link.label}
               </Link>
@@ -86,15 +88,16 @@ function FooterColumn({ heading, links }: FooterColumnProps) {
   )
 }
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear()
+  const apiHealth = await getApiHealth()
   return (
     <footer className="mt-6 w-full">
-      <div className="pt-block px-6 pb-6 sm:px-8">
-        <div className="lg:gap-block flex flex-col gap-10 lg:flex-row lg:justify-between">
+      <div className="px-6 pt-16 pb-6 sm:px-8">
+        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:gap-16">
           <div className="max-w-xs shrink-0">
             <FooterLogo />
-            <p className="text-subtle-foreground mt-2 text-sm leading-relaxed font-medium">
+            <p className="mt-2 text-sm leading-relaxed font-medium text-foreground-subtle">
               Production-grade products built for startups and enterprises.
             </p>
           </div>
@@ -114,8 +117,21 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="text-subtle-foreground gap-2 px-6 py-8 text-center text-xs font-medium hover:text-foreground sm:px-8">
-        <p>© {year} Fernleaf Kitchen</p>
+      <div className="flex flex-col items-center gap-2 px-6 py-8 text-center sm:flex-row sm:justify-between sm:px-8">
+        <p className="text-caption font-medium text-foreground-subtle">
+          © {year} Fernleaf Kitchen
+        </p>
+        <p className="flex items-center gap-2 text-caption text-foreground-muted">
+          <span
+            aria-hidden
+            className={
+              apiHealth !== null
+                ? "size-1.5 rounded-pill bg-success"
+                : "size-1.5 rounded-pill bg-foreground-ghost"
+            }
+          />
+          {apiHealth !== null ? "API online" : "API degraded"}
+        </p>
       </div>
     </footer>
   )

@@ -45,7 +45,7 @@ export function DashboardSidebar({
     .find((item) => isNavActive(pathname, item.href))?.label
 
   return (
-    <SidebarProvider className="min-h">
+    <SidebarProvider>
       <Sidebar collapsible="icon" className="sticky top-0 h-svh shrink-0">
         <SidebarHeader>
           <SidebarMenu>

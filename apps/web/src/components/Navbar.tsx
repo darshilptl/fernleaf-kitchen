@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { Button } from "@repo/ui/components/ui/button"
 import { loadStaffSession } from "@/lib/staff-session"
+import { GITHUB_URL } from "@/lib/site"
 
 const BRAND = {
   name: "Fernleaf Kitchen",
@@ -12,7 +13,7 @@ const BRAND = {
 
 const GITHUB_LINK = {
   label: "GitHub",
-  href: "https://github.com/darshilptl/fernleaf-kitchen", // TODO: replace with the real repo URL
+  href: GITHUB_URL,
 } as const
 
 const LOGIN_LINK = { label: "Login", href: "/login" } as const

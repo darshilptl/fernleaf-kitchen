@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { formatMoney, parseMoney } from './money.js';
 import { PERMISSIONS, ROLE_SPECS } from './permissions.js';
 import { loginSchema } from './schemas/auth.js';
+import { sessionSchema } from './schemas/session.js';
 
 describe('shared money helpers', () => {
   it('parses dollars strings to integer cents without floats', () => {
@@ -45,5 +46,21 @@ describe('shared auth contract', () => {
     expect(admin?.permissions).toContain('staff.manage');
     expect(admin?.permissions).not.toContain('deliveries.assignable');
     expect(admin?.permissions).toHaveLength(PERMISSIONS.length - 1);
+  });
+
+  it('accepts a complete session payload and rejects a malformed one', () => {
+    const valid = {
+      id: 'u1',
+      name: 'Admin',
+      email: 'admin@test.com',
+      roleName: 'Admin',
+      permissions: ['orders.read'],
+      landingPath: '/admin/dashboard',
+    };
+    expect(sessionSchema.safeParse(valid).success).toBe(true);
+    expect(sessionSchema.safeParse({ ...valid, roleName: '' }).success).toBe(false);
+    expect(sessionSchema.safeParse({ ...valid, permissions: 'orders.read' }).success).toBe(
+      false,
+    );
   });
 });

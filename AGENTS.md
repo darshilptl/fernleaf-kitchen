@@ -184,3 +184,7 @@ For every module:
 - README (required by the PDF): setup, architecture and data model diagram, key decisions and trade-offs,
   dashboard definitions, prioritisation notes (built, skipped and why, next steps, ambiguities).
 - The live app must keep running two weeks after submission and contain realistic data (skill: seed-demo-data).
+
+## 11a. UI shell contract
+
+- The dashboard/landing shell contract lives in `docs/ui-shell.md`. Build every screen inside it.

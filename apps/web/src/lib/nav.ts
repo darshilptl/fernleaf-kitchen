@@ -49,13 +49,6 @@ export const NAV_GROUPS: readonly NavGroup[] = [
   },
 ];
 
-/** Flat list preserved for non-sidebar consumers. */
-export const NAV_ITEMS: readonly NavItem[] = NAV_GROUPS.flatMap((group) => group.items);
-
-export function visibleNavItems(permissions: readonly string[]): NavItem[] {
-  return NAV_ITEMS.filter((item) => permissions.includes(item.permission));
-}
-
 export function visibleNavGroups(permissions: readonly string[]): NavGroup[] {
   return NAV_GROUPS.map((group) => ({
     ...group,

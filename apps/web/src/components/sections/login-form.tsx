@@ -82,7 +82,7 @@ export function LoginForm({
               width={40}
               height={40}
             />
-            <p className="text-balance text-muted-foreground">
+            <p className="text-balance text-foreground-muted">
               Login to your Fernleaf Kitchen account
             </p>
           </div>

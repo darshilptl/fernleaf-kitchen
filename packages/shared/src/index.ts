@@ -9,3 +9,5 @@ export type { ApiErrorItem, ErrorCode } from './errors.js';
 export { formatMoney, parseMoney } from './money.js';
 export { loginSchema } from './schemas/auth.js';
 export type { LoginInput } from './schemas/auth.js';
+export { sessionSchema } from './schemas/session.js';
+export type { SessionPayload } from './schemas/session.js';
