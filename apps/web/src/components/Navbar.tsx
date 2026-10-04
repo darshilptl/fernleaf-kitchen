@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { Button } from "@repo/ui/components/ui/button"
+import { loadStaffSession } from "@/lib/staff-session"
 
 const BRAND = {
   name: "Fernleaf Kitchen",
@@ -29,7 +30,10 @@ function GithubIcon({ className }: { className?: string }) {
   )
 }
 
-export default function Navbar() {
+export default async function Navbar() {
+  const session = await loadStaffSession()
+  const label = session?.roleName ?? LOGIN_LINK.label
+  const href = session?.landingPath ?? LOGIN_LINK.href
   return (
     <header className="top-0 z-50 w-full">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
@@ -67,7 +71,7 @@ export default function Navbar() {
             className="rounded-lg ring-1 ring-primary/30 ring-offset-1 hover:ring-offset-1"
             size="sm"
           >
-            <Link href={LOGIN_LINK.href}>{LOGIN_LINK.label}</Link>
+            <Link href={href}>{label}</Link>
           </Button>
         </div>
       </div>

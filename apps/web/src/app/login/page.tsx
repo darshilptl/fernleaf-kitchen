@@ -13,7 +13,7 @@ export default async function LoginPage(): Promise<React.JSX.Element> {
   return (
     <div className="flex flex-1 items-center justify-center gap-6 bg-background p-6 md:p-18">
       <div className="w-full max-w-sm">
-        <QueryProvider>
+        <QueryProvider initialSession={null}>
           <Suspense>
             <LoginForm />
           </Suspense>

@@ -1,13 +1,14 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import type { Session } from './session.js';
 
 /**
- * Server-side session load for the (staff) layout and pages.
- * Fetches the absolute API_URL and forwards async cookies() —
- * never a relative /api fetch without the cookie header.
+ * Server-side session load for layouts and pages.
+ * Cached per request: every reader in one render shares a single
+ * `/me` fetch. Never a relative `/api` fetch without the cookie.
  * Returns null on any non-OK response (401 included).
  */
-export async function loadStaffSession(): Promise<Session | null> {
+async function fetchStaffSession(): Promise<Session | null> {
   const cookieStore = await cookies();
   const apiUrl = process.env.API_URL ?? 'http://localhost:3001';
   let response: Response;
@@ -24,3 +25,5 @@ export async function loadStaffSession(): Promise<Session | null> {
   }
   return (await response.json()) as Session;
 }
+
+export const loadStaffSession = cache(fetchStaffSession);

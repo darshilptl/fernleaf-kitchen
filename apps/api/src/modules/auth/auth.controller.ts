@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import { Body, Controller, Get, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Post, Res } from '@nestjs/common';
 import { loginSchema } from '@repo/shared';
 import type { LoginInput } from '@repo/shared';
 import { isProduction } from '../../config/env.js';
@@ -18,6 +18,7 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Public()
+  @Header('Cache-Control', 'no-store')
   @Post('login')
   @HttpCode(200)
   async login(
@@ -36,6 +37,7 @@ export class AuthController {
   }
 
   @Public()
+  @Header('Cache-Control', 'no-store')
   @Post('logout')
   @HttpCode(200)
   logout(@Res({ passthrough: true }) res: Response): { ok: boolean } {
@@ -43,6 +45,7 @@ export class AuthController {
     return { ok: true };
   }
 
+  @Header('Cache-Control', 'no-store')
   @Get('me')
   me(@CurrentUser() user: RequestUser): Promise<MePayload> {
     return this.auth.requireMe(user.id);

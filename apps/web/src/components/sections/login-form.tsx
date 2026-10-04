@@ -13,6 +13,7 @@ import { Input } from "@repo/ui/components/ui/input"
 import { SESSION_QUERY_KEY } from "@/hooks/use-session"
 import { ApiError, apiRequest } from "@/lib/api-client"
 import { applyServerErrors } from "@/lib/apply-server-errors"
+import { broadcastSessionChanged } from "@/lib/session-broadcast"
 import type { Session } from "@/lib/session"
 
 interface LoginFormProps extends React.ComponentProps<"div"> {}
@@ -40,6 +41,7 @@ export function LoginForm({
       apiRequest<Session>("/api/auth/login", { method: "POST", body: input }),
     onSuccess: (session) => {
       queryClient.setQueryData(SESSION_QUERY_KEY, session)
+      broadcastSessionChanged()
       const next = searchParams.get("next")
       const target =
         next !== null && next.startsWith("/") && !next.startsWith("//")

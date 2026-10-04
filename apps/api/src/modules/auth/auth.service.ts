@@ -12,6 +12,8 @@ export interface MePayload {
   id: string;
   name: string;
   email: string;
+  /** Display only. Never used for logic; nav and guards use permissions. */
+  roleName: string;
   permissions: string[];
   landingPath: string;
 }
@@ -87,7 +89,7 @@ interface UserWithRole {
   id: string;
   name: string;
   email: string;
-  role: { landingPath: string; permissions: Array<{ permission: string }> };
+  role: { name: string; landingPath: string; permissions: Array<{ permission: string }> };
 }
 
 function toMe(user: UserWithRole): MePayload {
@@ -95,6 +97,7 @@ function toMe(user: UserWithRole): MePayload {
     id: user.id,
     name: user.name,
     email: user.email,
+    roleName: user.role.name,
     permissions: user.role.permissions.map((row) => row.permission),
     landingPath: user.role.landingPath,
   };

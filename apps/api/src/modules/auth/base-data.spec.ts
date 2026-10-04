@@ -38,6 +38,7 @@ describe('ensureBaseData', () => {
       expect(spec).toBeDefined();
       expect(new Set(me.permissions)).toEqual(new Set(spec?.permissions ?? []));
       expect(me.landingPath).toBe(spec?.landingPath);
+      expect(me.roleName).toBe(spec?.name);
     }
 
     const staffBefore = await prisma.staffUser.count();

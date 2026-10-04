@@ -19,7 +19,7 @@ export default async function StaffLayout({
     redirect("/login")
   }
   return (
-    <QueryProvider>
+    <QueryProvider initialSession={session}>
       <DashboardSidebar session={session}>{children}</DashboardSidebar>
     </QueryProvider>
   )

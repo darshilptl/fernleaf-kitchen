@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from '@/lib/api-client';
 import type { Session } from '@/lib/session';
+import { broadcastSessionChanged } from '@/lib/session-broadcast';
 
 export const SESSION_QUERY_KEY = ['session'] as const;
 
@@ -48,6 +49,7 @@ export function useSession(): {
   async function logout(): Promise<void> {
     await apiRequest<{ ok: boolean }>('/api/auth/logout', { method: 'POST' });
     queryClient.setQueryData(SESSION_QUERY_KEY, null);
+    broadcastSessionChanged();
     router.push('/login');
   }
 

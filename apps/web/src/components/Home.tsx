@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@repo/ui/components/ui/button"
 import { DashedGrid } from "@/components/blocks/dashed-grid"
+import { loadStaffSession } from "@/lib/staff-session"
 
 const HERO_BACKGROUND: "grid" | "image" = "image"
 
@@ -40,7 +41,10 @@ function ImageBackground() {
   )
 }
 
-export function HomeSection() {
+export async function HomeSection() {
+  const session = await loadStaffSession()
+  const label = session?.roleName ?? "Login"
+  const href = session?.landingPath ?? "/login"
   return (
     <section className="relative mb-2 flex min-h-150 flex-col items-center justify-center">
       {HERO_BACKGROUND === "grid" ? <GridBackground /> : <ImageBackground />}
@@ -62,7 +66,7 @@ export function HomeSection() {
         <div className="mt-8 flex items-center justify-center gap-3">
           <Button
             nativeButton={false}
-            render={<Link href="/login">Login</Link>}
+            render={<Link href={href}>{label}</Link>}
             className="h-10 rounded-lg px-6 text-center ring-1 ring-primary/30 ring-offset-1 hover:ring-offset-1"
           />
           <Button
