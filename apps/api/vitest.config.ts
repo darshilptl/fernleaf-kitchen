@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -9,5 +10,9 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['**/*.spec.ts'],
+    // All specs share one test database (see test/db.ts), so files
+    // must not run in parallel against each other.
+    fileParallelism: false,
+    globalSetup: ['./test/global-setup.ts'],
   },
 });
