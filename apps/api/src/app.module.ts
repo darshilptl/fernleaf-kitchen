@@ -11,11 +11,12 @@ import { EmployeesModule } from './modules/employees/employees.module.js';
 import { MenuModule } from './modules/menu/menu.module.js';
 import { PricingModule } from './modules/pricing/pricing.module.js';
 import { StaffModule } from './modules/staff/staff.module.js';
+import { SettingsModule } from './modules/settings/settings.module.js';
 import { PermissionGuard } from './modules/auth/guards/permission.guard.js';
 import { ensureBaseData } from './modules/auth/base-data.js';
 
 @Module({
-  imports: [AuthModule, CatalogueModule, CompaniesModule, EmployeesModule, MenuModule, PricingModule, StaffModule],
+  imports: [AuthModule, CatalogueModule, CompaniesModule, EmployeesModule, MenuModule, PricingModule, StaffModule, SettingsModule],
   controllers: [HealthController],
   providers: [
     PrismaService,
