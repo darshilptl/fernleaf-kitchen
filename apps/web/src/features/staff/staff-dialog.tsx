@@ -17,6 +17,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -77,7 +78,7 @@ export function StaffDialog({
           >
             <FieldGroup>
               <Field>
-                <FieldLabel>Role</FieldLabel>
+                <FieldLabel htmlFor="staff-role-change">Role</FieldLabel>
                 <Select
                   value={roleForm.watch('roleId')}
                   onValueChange={(value) => {
@@ -86,16 +87,18 @@ export function StaffDialog({
                     }
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="staff-role-change">
                     <SelectValue placeholder="Pick a role" />
                   </SelectTrigger>
                   <SelectContent>
+<SelectGroup>
                     {(roles ?? []).map((role) => (
                       <SelectItem key={role.id} value={role.id}>
                         {role.name}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectGroup>
+</SelectContent>
                 </Select>
               </Field>
             </FieldGroup>
@@ -125,7 +128,7 @@ export function StaffDialog({
                 <Input id="staff-email" type="email" {...form.register('email')} />
               </Field>
               <Field>
-                <FieldLabel>Role</FieldLabel>
+                <FieldLabel htmlFor="staff-role">Role</FieldLabel>
                 <Select
                   value={form.watch('roleId')}
                   onValueChange={(value) => {
@@ -134,16 +137,18 @@ export function StaffDialog({
                     }
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="staff-role">
                     <SelectValue placeholder="Pick a role" />
                   </SelectTrigger>
                   <SelectContent>
+<SelectGroup>
                     {(roles ?? []).map((role) => (
                       <SelectItem key={role.id} value={role.id}>
                         {role.name}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectGroup>
+</SelectContent>
                 </Select>
               </Field>
               <Field>
@@ -155,7 +160,7 @@ export function StaffDialog({
                   {...form.register('password')}
                 />
               </Field>
-              {serverError !== undefined && <p className="text-destructive">{serverError}</p>}
+              {serverError !== undefined && <p className="text-body-sm text-destructive">{serverError}</p>}
             </FieldGroup>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>

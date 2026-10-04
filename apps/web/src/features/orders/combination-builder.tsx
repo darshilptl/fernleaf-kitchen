@@ -1,7 +1,10 @@
 'use client';
 
+import { useId } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
+import { Field, FieldLabel } from '@repo/ui/components/ui/field';
 import { Input } from '@repo/ui/components/ui/input';
+import { ToggleGroup, ToggleGroupItem } from '@repo/ui/components/ui/toggle-group';
 import { formatMoney } from '@repo/shared';
 import type { PreviewGroup } from '@/hooks/use-menu';
 
@@ -23,6 +26,7 @@ export function CombinationBuilder(props: {
   onChange: (value: ComboDraft) => void;
   onRemove: (() => void) | null;
 }): React.JSX.Element {
+  const qtyId = useId();
   const unit =
     props.dishPriceCents +
     Object.values(props.value.choices).reduce((sum, optionId) => {
@@ -36,49 +40,40 @@ export function CombinationBuilder(props: {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border-subtle p-4">
       {props.groups.map((group) => (
-        <div key={group.id} className="flex flex-col gap-2">
-          <p className="text-body-sm font-medium">
+        <Field key={group.id}>
+          <FieldLabel>
             {group.name}
             {group.isRequired ? '' : ' (optional)'}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {group.isRequired ? null : (
-              <Button
-                variant={props.value.choices[group.id] == null ? 'default' : 'outline'}
-                size="sm"
-                onClick={() =>
-                  props.onChange({
-                    ...props.value,
-                    choices: { ...props.value.choices, [group.id]: null },
-                  })
-                }
-              >
-                None
-              </Button>
-            )}
+          </FieldLabel>
+          <ToggleGroup
+            aria-label={group.name}
+            value={[props.value.choices[group.id] ?? 'none']}
+            onValueChange={(values) => {
+              const next = values[0];
+              if (next !== undefined) {
+                props.onChange({
+                  ...props.value,
+                  choices: { ...props.value.choices, [group.id]: next === 'none' ? null : next },
+                });
+              }
+            }}
+          >
+            {group.isRequired ? null : <ToggleGroupItem value="none">None</ToggleGroupItem>}
             {group.options.map((option) => (
-              <Button
-                key={option.id}
-                variant={props.value.choices[group.id] === option.id ? 'default' : 'outline'}
-                size="sm"
-                onClick={() =>
-                  props.onChange({
-                    ...props.value,
-                    choices: { ...props.value.choices, [group.id]: option.id },
-                  })
-                }
-              >
+              <ToggleGroupItem key={option.id} value={option.id}>
                 {option.name} · {formatMoney(option.priceCents)}
-              </Button>
+              </ToggleGroupItem>
             ))}
-          </div>
-        </div>
+          </ToggleGroup>
+        </Field>
       ))}
-      <div className="flex items-center justify-between gap-4">
-        <label className="flex items-center gap-2 text-body-sm">
-          Qty
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <Field orientation="horizontal">
+          <FieldLabel htmlFor={qtyId} className="font-normal">
+            Qty
+          </FieldLabel>
           <Input
-            aria-label="Combination quantity"
+            id={qtyId}
             type="number"
             min={1}
             className="w-20"
@@ -87,7 +82,7 @@ export function CombinationBuilder(props: {
               props.onChange({ ...props.value, quantity: Math.max(1, Number(event.target.value)) })
             }
           />
-        </label>
+        </Field>
         <p className="text-body-sm tabular-nums">
           {formatMoney(unit)} each · {formatMoney(unit * props.value.quantity)}
         </p>

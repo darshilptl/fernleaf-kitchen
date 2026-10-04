@@ -18,6 +18,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -72,7 +73,7 @@ export function CompanyDialog({ onClose }: { onClose: () => void }): React.JSX.E
 
   return (
     <Dialog open onOpenChange={() => onClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-h-svh overflow-y-auto">
         <DialogHeader>
           <DialogTitle>New company</DialogTitle>
         </DialogHeader>
@@ -136,64 +137,70 @@ export function CompanyDialog({ onClose }: { onClose: () => void }): React.JSX.E
               />
             </Field>
             <Field>
-              <FieldLabel>Price tier</FieldLabel>
+              <FieldLabel htmlFor="company-tier">Price tier</FieldLabel>
               <Select
                 value={form.watch('priceTierId') ?? ''}
                 onValueChange={(value) =>
                   form.setValue('priceTierId', value === '' ? null : value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="company-tier">
                   <SelectValue placeholder="Default tier" />
                 </SelectTrigger>
                 <SelectContent>
+<SelectGroup>
                   {(tiers ?? []).map((tier) => (
                     <SelectItem key={tier.id} value={tier.id}>
                       {tier.name}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectGroup>
+</SelectContent>
               </Select>
             </Field>
             <Field>
-              <FieldLabel>Default packaging</FieldLabel>
+              <FieldLabel htmlFor="company-packaging">Default packaging</FieldLabel>
               <Select
                 value={form.watch('defaultPackagingTypeId') ?? ''}
                 onValueChange={(value) => form.setValue('defaultPackagingTypeId', value ?? '')}
               >
-                <SelectTrigger>
+                <SelectTrigger id="company-packaging">
                   <SelectValue placeholder="Pick packaging" />
                 </SelectTrigger>
                 <SelectContent>
+<SelectGroup>
                   {(packagingTypes ?? []).map((row) => (
                     <SelectItem key={row.id} value={row.id}>
                       {row.name}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectGroup>
+</SelectContent>
               </Select>
             </Field>
             <Field>
-              <FieldLabel>Default driver</FieldLabel>
+              <FieldLabel htmlFor="company-driver">Default driver</FieldLabel>
               <Select
                 value={form.watch('defaultDriverId') ?? ''}
                 onValueChange={(value) =>
                   form.setValue('defaultDriverId', value === '' ? null : value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="company-driver">
                   <SelectValue placeholder="No default driver" />
                 </SelectTrigger>
                 <SelectContent>
+<SelectGroup>
                   {(drivers ?? []).map((driver) => (
                     <SelectItem key={driver.id} value={driver.id}>
                       {driver.name}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectGroup>
+</SelectContent>
               </Select>
             </Field>
-            {serverError !== undefined && <p className="text-destructive">{serverError}</p>}
+            {serverError !== undefined && <p className="text-body-sm text-destructive">{serverError}</p>}
           </FieldGroup>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

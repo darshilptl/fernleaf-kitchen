@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { referenceItemSchema } from '@repo/shared';
 import type { ReferenceItemInput } from '@repo/shared';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
 import {
   Dialog,
@@ -18,6 +17,7 @@ import { Field, FieldGroup, FieldLabel } from '@repo/ui/components/ui/field';
 import { Input } from '@repo/ui/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/ui/tabs';
 import { ApiError } from '@/lib/api-client';
+import { StatusBadge } from '@/components/status-badge';
 import { applyServerErrors } from '@/lib/apply-server-errors';
 import {
   REFERENCE_LISTS,
@@ -36,7 +36,7 @@ import type { ReferenceListKey, ReferenceRow } from '@/hooks/use-catalogue';
 export function ReferenceTabs(): React.JSX.Element {
   const [tab, setTab] = useState<ReferenceListKey>('allergens');
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-6">
       <h2 className="heading-sm">Reference lists</h2>
       <Tabs value={tab} onValueChange={(value) => setTab(value as ReferenceListKey)}>
         <TabsList>
@@ -75,11 +75,11 @@ function ReferenceListManager({ listKey }: { listKey: ReferenceListKey }): React
         </Button>
       </div>
       {list.map((row) => (
-        <div key={row.id} className="flex items-center justify-between gap-4">
+        <div key={row.id} className="flex flex-wrap items-center justify-between gap-4">
           <p className="text-body-sm">
-            {row.name} {!row.isActive && <Badge>Inactive</Badge>}
+            {row.name} {!row.isActive && <StatusBadge tone="ghost" label="Inactive" />}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => setRenaming(row)}>
               Rename
             </Button>
@@ -150,7 +150,7 @@ function ReferenceDialog({
               <FieldLabel htmlFor="reference-name">Name</FieldLabel>
               <Input id="reference-name" {...form.register('name')} />
             </Field>
-            {serverError !== undefined && <p className="text-destructive">{serverError}</p>}
+            {serverError !== undefined && <p className="text-body-sm text-destructive">{serverError}</p>}
           </FieldGroup>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

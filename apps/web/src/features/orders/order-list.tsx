@@ -7,13 +7,15 @@ import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/ui/select';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@repo/ui/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@repo/ui/components/ui/drawer';
 import { formatMoney } from '@repo/shared';
 import { DataTable } from '@/components/data-table';
+import { DatePicker } from '@/components/date-picker';
 import { StatusBadge } from '@/components/status-badge';
 import type { StatusTone } from '@/components/status-badge';
 import { useCompanies } from '@/hooks/use-companies';
@@ -60,13 +62,13 @@ export function OrderList(): React.JSX.Element {
   const rows = data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-sm">Orders</h1>
           <p className="description-sm">Drafts, placed and confirmed orders with totals.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={run} disabled={running}>
             Run cut-off
           </Button>
@@ -126,7 +128,7 @@ export function OrderList(): React.JSX.Element {
         emptyTitle="No orders yet"
         emptyDescription="Create an order for an employee to get started."
         filters={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-4">
             <Input
               aria-label="Search orders"
               placeholder="Order #, employee, company"
@@ -148,13 +150,15 @@ export function OrderList(): React.JSX.Element {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
+<SelectGroup>
                 <SelectItem value="all">All statuses</SelectItem>
                 {STATUSES.map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectGroup>
+</SelectContent>
             </Select>
             <Select
               value={companyId === '' ? 'all' : companyId}
@@ -167,13 +171,15 @@ export function OrderList(): React.JSX.Element {
                 <SelectValue placeholder="Company" />
               </SelectTrigger>
               <SelectContent>
+<SelectGroup>
                 <SelectItem value="all">All companies</SelectItem>
                 {(companies?.items ?? []).map((company) => (
                   <SelectItem key={company.id} value={company.id}>
                     {company.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectGroup>
+</SelectContent>
             </Select>
             <Select
               value={invoiced === '' ? 'all' : invoiced}
@@ -186,42 +192,42 @@ export function OrderList(): React.JSX.Element {
                 <SelectValue placeholder="Invoiced" />
               </SelectTrigger>
               <SelectContent>
+<SelectGroup>
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="yes">Invoiced</SelectItem>
                 <SelectItem value="no">Not invoiced</SelectItem>
-              </SelectContent>
+              </SelectGroup>
+</SelectContent>
             </Select>
-            <Input
-              aria-label="From date"
-              type="date"
+            <DatePicker
               value={from}
-              onChange={(event) => {
-                setFrom(event.target.value);
+              onChange={(value) => {
+                setFrom(value);
                 setPage(1);
               }}
-              className="w-40"
+              label="From date"
             />
-            <Input
-              aria-label="To date"
-              type="date"
+            <DatePicker
               value={to}
-              onChange={(event) => {
-                setTo(event.target.value);
+              onChange={(value) => {
+                setTo(value);
                 setPage(1);
               }}
-              className="w-40"
+              label="To date"
             />
           </div>
         }
       />
-      <Sheet open={creating} onOpenChange={setCreating}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>New order</SheetTitle>
-          </SheetHeader>
-          <OrderBuilder onDone={() => setCreating(false)} />
-        </SheetContent>
-      </Sheet>
+      <Drawer open={creating} onOpenChange={setCreating} swipeDirection="right">
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>New order</DrawerTitle>
+          </DrawerHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto p-6">
+            <OrderBuilder onDone={() => setCreating(false)} />
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

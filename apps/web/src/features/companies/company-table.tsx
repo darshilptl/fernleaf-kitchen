@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
 import { Input } from '@repo/ui/components/ui/input';
 import { DataTable } from '@/components/data-table';
+import { StatusBadge } from '@/components/status-badge';
 import { useCompanies } from '@/hooks/use-companies';
 import type { CompanyRow } from '@/hooks/use-companies';
 import { CompanyDialog } from './company-dialog';
@@ -22,8 +22,8 @@ export function CompanyTable(): React.JSX.Element {
   const rows = data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-sm">Companies</h1>
           <p className="description-sm">Every customer belongs to exactly one company.</p>
@@ -45,7 +45,11 @@ export function CompanyTable(): React.JSX.Element {
             key: 'status',
             header: 'Status',
             render: (row) =>
-              row.isActive ? <Badge>Active</Badge> : <Badge>Inactive</Badge>,
+              row.isActive ? (
+                <StatusBadge tone="success" label="Active" />
+              ) : (
+                <StatusBadge tone="ghost" label="Inactive" />
+              ),
           },
           {
             key: 'actions',

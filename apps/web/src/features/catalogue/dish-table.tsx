@@ -1,9 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
+import { DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/ui/dropdown-menu';
+
 import { DataTable } from '@/components/data-table';
+import { StatusBadge } from '@/components/status-badge';
 import { useDishes, useSetDishActive } from '@/hooks/use-catalogue';
 import type { DishRow } from '@/hooks/use-catalogue';
 import { DishSheet } from './dish-sheet';
@@ -22,8 +29,8 @@ export function DishTable(): React.JSX.Element {
   const rows = data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-sm">Catalogue</h1>
           <p className="description-sm">Dishes are deactivated, never deleted.</p>
@@ -39,20 +46,30 @@ export function DishTable(): React.JSX.Element {
           {
             key: 'status',
             header: 'Status',
-            render: (row) => (row.isActive ? <Badge>Active</Badge> : <Badge>Inactive</Badge>),
+            render: (row) =>
+              row.isActive ? (
+                <StatusBadge tone="success" label="Active" />
+              ) : (
+                <StatusBadge tone="ghost" label="Inactive" />
+              ),
           },
           {
             key: 'actions',
             header: 'Actions',
             render: (row) => (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setEditing(row)}>
-                  Edit
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setActive(row.id, !row.isActive)}>
-                  {row.isActive ? 'Deactivate' : 'Activate'}
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={<Button variant="outline" size="sm">Actions</Button>}
+                />
+                <DropdownMenuContent>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => setEditing(row)}>Edit</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setActive(row.id, !row.isActive)}>
+                      {row.isActive ? 'Deactivate' : 'Activate'}
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ),
           },
         ]}

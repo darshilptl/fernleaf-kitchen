@@ -16,8 +16,8 @@ const DOT: Record<StatusTone, string> = {
  */
 export function StatusBadge(props: { tone: StatusTone; label: string }): React.JSX.Element {
   return (
-    <span className="inline-flex items-center gap-2">
-      <span className={`inline-block h-2 w-2 rounded-pill ${DOT[props.tone]}`} aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 rounded-pill border border-border px-2 py-0.5">
+      <span className={`inline-block size-1.5 rounded-pill ${DOT[props.tone]}`} aria-hidden="true" />
       <span className="text-caption text-foreground-muted">{props.label}</span>
     </span>
   );

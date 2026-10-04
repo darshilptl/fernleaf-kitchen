@@ -5,8 +5,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { changeRoleSchema, createStaffSchema } from '@repo/shared';
 import type { ChangeRoleInput, CreateStaffInput } from '@repo/shared';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
+import { DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/ui/dropdown-menu';
+
 import {
   Dialog,
   DialogContent,
@@ -34,6 +40,7 @@ import {
   AlertDialogTitle,
 } from '@repo/ui/components/ui/alert-dialog';
 import { DataTable } from '@/components/data-table';
+import { StatusBadge } from '@/components/status-badge';
 import { useSetStaffActive, useStaff } from '@/hooks/use-staff';
 import type { StaffRow } from '@/hooks/use-staff';
 import { StaffDialog } from './staff-dialog';
@@ -53,8 +60,8 @@ export function StaffTable(): React.JSX.Element {
   const rows = data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-sm">Staff</h1>
           <p className="description-sm">One account, one role. Deactivation applies immediately.</p>
@@ -71,24 +78,32 @@ export function StaffTable(): React.JSX.Element {
           {
             key: 'status',
             header: 'Status',
-            render: (row) => (row.isActive ? <Badge>Active</Badge> : <Badge>Inactive</Badge>),
+            render: (row) =>
+              row.isActive ? (
+                <StatusBadge tone="success" label="Active" />
+              ) : (
+                <StatusBadge tone="ghost" label="Inactive" />
+              ),
           },
           {
             key: 'actions',
             header: 'Actions',
             render: (row) => (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setChanging(row)}>
-                  Change role
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setConfirming({ row, active: !row.isActive })}
-                >
-                  {row.isActive ? 'Deactivate' : 'Activate'}
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={<Button variant="outline" size="sm">Actions</Button>}
+                />
+                <DropdownMenuContent>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => setChanging(row)}>
+                      Change role
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setConfirming({ row, active: !row.isActive })}>
+                      {row.isActive ? 'Deactivate' : 'Activate'}
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ),
           },
         ]}

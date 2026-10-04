@@ -61,7 +61,7 @@ export function CsvImportDialog({
               accept=".csv,text/csv"
               onChange={(event) => handleFile(event.target.files?.[0])}
             />
-            {fileError !== undefined && <p className="text-destructive">{fileError}</p>}
+            {fileError !== undefined && <p className="text-body-sm text-destructive">{fileError}</p>}
           </Field>
           {result !== undefined && (
             <div className="flex flex-col gap-2">

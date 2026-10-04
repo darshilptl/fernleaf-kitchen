@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { formatMoney, parseMoney } from '@repo/shared';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
 import { Checkbox } from '@repo/ui/components/ui/checkbox';
 import { Input } from '@repo/ui/components/ui/input';
 import { DataTable } from '@/components/data-table';
+import { StatusBadge } from '@/components/status-badge';
 import {
   useClearTypedPrice,
   useSaveBatchPrices,
@@ -31,10 +31,16 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
   const { clear } = useClearTypedPrice(tierId);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | undefined>(undefined);
+  // Client-side paging over the full grid: the grid endpoint has no
+  // server pagination (backend change, out of scope), so the pager
+  // slices the loaded rows instead of faking a single page.
+  const [gridPage, setGridPage] = useState(1);
   const list = rows ?? [];
+  const pageRows = list.slice((gridPage - 1) * 20, gridPage * 20);
 
   useEffect(() => {
     clearDrafts();
+    setGridPage(1);
   }, [tierId, missingOnly, clearDrafts]);
 
   function handleSave(): void {
@@ -62,10 +68,16 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="heading-sm">Tier prices</h2>
-        <div className="flex items-center gap-4">
+        <Button size="sm" disabled={isPending} onClick={handleSave}>
+          Save prices
+        </Button>
+      </div>
+      {formError !== undefined && <p className="text-body-sm text-destructive">{formError}</p>}
+      <DataTable<GridRow>
+        filters={
           <label className="flex items-center gap-2 text-body-sm">
             <Checkbox
               checked={missingOnly}
@@ -73,13 +85,7 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
             />
             Missing prices only
           </label>
-          <Button size="sm" disabled={isPending} onClick={handleSave}>
-            Save prices
-          </Button>
-        </div>
-      </div>
-      {formError !== undefined && <p className="text-destructive">{formError}</p>}
-      <DataTable<GridRow>
+        }
         columns={[
           { key: 'name', header: 'Item', render: (row) => row.name },
           { key: 'kind', header: 'Kind', render: (row) => row.kind },
@@ -89,6 +95,7 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
             render: (row) => (
               <Input
                 aria-label={`Typed price for ${row.name}`}
+                className="tabular-nums text-right"
                 placeholder={row.manualCents === null ? '' : formatMoney(row.manualCents)}
                 value={drafts[`${row.kind}:${row.id}`] ?? ''}
                 onChange={(event) =>
@@ -102,7 +109,9 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
             header: 'Effective',
             render: (row) =>
               row.effectiveCents === null ? (
-                <span className="text-caption">—</span>
+                <span className="text-caption" aria-label="No price">
+                  —
+                </span>
               ) : (
                 <span className="tabular-nums">{formatMoney(row.effectiveCents)}</span>
               ),
@@ -112,11 +121,11 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
             header: 'Source',
             render: (row) =>
               row.source === 'MANUAL' ? (
-                <Badge>Manual</Badge>
+                <StatusBadge tone="info" label="Manual" />
               ) : row.source === 'DERIVED' ? (
-                <Badge>Derived</Badge>
+                <StatusBadge tone="success" label="Derived" />
               ) : (
-                <Badge>None</Badge>
+                <StatusBadge tone="ghost" label="None" />
               ),
           },
           {
@@ -124,7 +133,9 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
             header: 'Actions',
             render: (row) =>
               row.manualCents === null ? (
-                <span className="text-caption">—</span>
+                <span className="text-caption" aria-label="No typed price">
+                  —
+                </span>
               ) : (
                 <Button variant="outline" size="sm" onClick={() => clear(row.kind, row.id)}>
                   Clear
@@ -132,12 +143,12 @@ export function PriceGrid({ tierId }: { tierId: string }): React.JSX.Element {
               ),
           },
         ]}
-        rows={list}
+        rows={pageRows}
         getRowId={(row) => `${row.kind}:${row.id}`}
-        page={1}
-        pageSize={list.length === 0 ? 20 : list.length}
+        page={gridPage}
+        pageSize={20}
         total={list.length}
-        onPageChange={() => undefined}
+        onPageChange={setGridPage}
         isLoading={isLoading}
         isError={isError}
         onRetry={refetch}

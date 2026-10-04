@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
+import { Field, FieldLabel } from '@repo/ui/components/ui/field';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +16,7 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -41,18 +43,18 @@ export function PlacementManager(): React.JSX.Element {
   const { add, isPending } = useAddPlacement(addingTo ?? '');
   const { update } = useUpdatePlacement();
   const { remove } = useDeletePlacement();
-  const [hiding, setHiding] = useState<{ id: string; name: string } | null>(null);
+  const [removing, setRemoving] = useState<{ id: string; name: string } | null>(null);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 flex-col gap-6">
       <h2 className="heading-sm">Dish placements</h2>
       {(categories ?? []).map((category) => (
         <div
           key={category.id}
           id={`placements-${category.id}`}
-          className="flex flex-col gap-4 rounded-lg bg-background-panel p-6 shadow-card"
+          className="flex min-w-0 flex-col gap-6 rounded-lg bg-background-panel p-6 shadow-card"
         >
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-body-sm font-medium">
               {category.name} <span className="text-caption text-foreground-muted">/{category.slug}</span>
             </p>
@@ -61,42 +63,47 @@ export function PlacementManager(): React.JSX.Element {
             </Button>
           </div>
           {category.items.map((item) => (
-            <div key={item.id} className="flex items-center justify-between gap-4">
+            <div key={item.id} className="flex flex-wrap items-center justify-between gap-4">
               <p className="text-body-sm">
                 {item.dish.name} {!item.isActive && '(hidden)'}
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    item.isActive
-                      ? setHiding({ id: item.id, name: item.dish.name })
-                      : update(item.id, { isActive: true })
-                  }
+                  onClick={() => update(item.id, { isActive: !item.isActive })}
                 >
                   {item.isActive ? 'Hide' : 'Show'}
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => remove(item.id)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setRemoving({ id: item.id, name: item.dish.name })}
+                >
                   Remove
                 </Button>
               </div>
             </div>
           ))}
           {addingTo === category.id && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-end gap-4">
+              <Field>
+                <FieldLabel htmlFor={`pick-dish-${category.id}`}>Dish</FieldLabel>
               <Select value={dishId} onValueChange={(value) => setDishId(value ?? '')}>
-                <SelectTrigger className="w-64">
+                <SelectTrigger id={`pick-dish-${category.id}`} className="w-64">
                   <SelectValue placeholder="Pick a dish" />
                 </SelectTrigger>
                 <SelectContent>
+<SelectGroup>
                   {(dishes ?? []).map((dish) => (
                     <SelectItem key={dish.id} value={dish.id}>
                       {dish.name}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectGroup>
+</SelectContent>
               </Select>
+              </Field>
               <Button
                 size="sm"
                 disabled={isPending || dishId === ''}
@@ -112,24 +119,24 @@ export function PlacementManager(): React.JSX.Element {
           )}
         </div>
       ))}
-      {hiding !== null && (
-        <AlertDialog open onOpenChange={() => setHiding(null)}>
+      {removing !== null && (
+        <AlertDialog open onOpenChange={() => setRemoving(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Hide {hiding.name}?</AlertDialogTitle>
+              <AlertDialogTitle>Remove {removing.name}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This placement disappears from every employee menu until shown again.
+                The placement is removed from this category. The dish itself stays.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  update(hiding.id, { isActive: false });
-                  setHiding(null);
+                  remove(removing.id);
+                  setRemoving(null);
                 }}
               >
-                Hide
+                Remove
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

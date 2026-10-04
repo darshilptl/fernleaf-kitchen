@@ -24,11 +24,12 @@ import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@repo/ui/components/ui/select';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@repo/ui/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@repo/ui/components/ui/drawer';
 import { Skeleton } from '@repo/ui/components/ui/skeleton';
 import { formatMoney } from '@repo/shared';
 import { StatusBadge } from '@/components/status-badge';
@@ -76,7 +77,7 @@ export function OrderDetail({ id }: { id: string }): React.JSX.Element {
   }
   if (isError) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
         <p className="text-body-sm">Could not load the order.</p>
         <Button variant="outline" size="sm" onClick={refetch}>
           Retry
@@ -89,8 +90,8 @@ export function OrderDetail({ id }: { id: string }): React.JSX.Element {
   const confirmable = order.status === 'PLACED' || order.status === 'CONFIRMED';
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-sm tabular-nums">Order #{order.orderNumber}</h1>
           <p className="description-sm">
@@ -128,14 +129,14 @@ export function OrderDetail({ id }: { id: string }): React.JSX.Element {
         )}
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
         <h2 className="heading-sm">Lines</h2>
         {order.lines.length === 0 ? (
           <p className="text-body-sm">No lines yet.</p>
         ) : (
           order.lines.map((line) => (
-            <div key={line.id} className="flex flex-col gap-2 rounded-lg bg-background-panel p-4 shadow-card">
-              <div className="flex items-center justify-between gap-4">
+            <div key={line.id} className="flex flex-col gap-2 rounded-lg bg-background-panel p-6 shadow-card">
+              <div className="flex flex-wrap items-center justify-between gap-4">
                 <p className="text-body font-medium">{line.dishName}</p>
                 <p className="text-body-sm tabular-nums">
                   {formatMoney(line.dishPriceCents)} × {line.quantity} = {formatMoney(line.lineTotalCents)}
@@ -186,14 +187,16 @@ export function OrderDetail({ id }: { id: string }): React.JSX.Element {
         ))}
       </div>
 
-      <Sheet open={editing} onOpenChange={setEditing}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Edit order</SheetTitle>
-          </SheetHeader>
-          <OrderBuilder order={order} onDone={() => setEditing(false)} />
-        </SheetContent>
-      </Sheet>
+      <Drawer open={editing} onOpenChange={setEditing} swipeDirection="right">
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Edit order</DrawerTitle>
+          </DrawerHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto p-6">
+            <OrderBuilder order={order} onDone={() => setEditing(false)} />
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {cancellingAsk && (
         <AlertDialog open onOpenChange={() => setCancellingAsk(false)}>
@@ -268,13 +271,15 @@ export function OrderDetail({ id }: { id: string }): React.JSX.Element {
                     <SelectValue placeholder="Keep current" />
                   </SelectTrigger>
                   <SelectContent>
+<SelectGroup>
                     <SelectItem value="keep">Keep current</SelectItem>
                     {(company?.addresses ?? []).map((row) => (
                       <SelectItem key={row.id} value={row.id}>
                         {row.label} · {row.line1}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectGroup>
+</SelectContent>
                 </Select>
               </Field>
               <Field>
@@ -299,13 +304,15 @@ export function OrderDetail({ id }: { id: string }): React.JSX.Element {
                     <SelectValue placeholder="Keep current" />
                   </SelectTrigger>
                   <SelectContent>
+<SelectGroup>
                     <SelectItem value="keep">Keep current</SelectItem>
                     {(packaging ?? []).map((row) => (
                       <SelectItem key={row.id} value={row.id}>
                         {row.name}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectGroup>
+</SelectContent>
                 </Select>
               </Field>
             </FieldGroup>

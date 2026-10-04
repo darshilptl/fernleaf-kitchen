@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { optionSchema, parseMoney } from '@repo/shared';
 import type { OptionInput } from '@repo/shared';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
 import {
   Dialog,
@@ -17,6 +16,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from '@repo/ui/components/ui/field';
 import { Input } from '@repo/ui/components/ui/input';
 import { DataTable } from '@/components/data-table';
+import { StatusBadge } from '@/components/status-badge';
 import { ApiError } from '@/lib/api-client';
 import { applyServerErrors } from '@/lib/apply-server-errors';
 import { useCreateOption, useOptions, useSetOptionActive } from '@/hooks/use-catalogue';
@@ -36,8 +36,8 @@ export function OptionTable(): React.JSX.Element {
   const rows = data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="heading-sm">Options</h2>
         <Button size="sm" onClick={() => setCreating(true)}>
           New option
@@ -49,7 +49,12 @@ export function OptionTable(): React.JSX.Element {
           {
             key: 'status',
             header: 'Status',
-            render: (row) => (row.isActive ? <Badge>Active</Badge> : <Badge>Inactive</Badge>),
+            render: (row) =>
+              row.isActive ? (
+                <StatusBadge tone="success" label="Active" />
+              ) : (
+                <StatusBadge tone="ghost" label="Inactive" />
+              ),
           },
           {
             key: 'actions',
@@ -134,7 +139,7 @@ function OptionDialog({ onClose }: { onClose: () => void }): React.JSX.Element {
               <FieldLabel htmlFor="option-description">Description</FieldLabel>
               <Input id="option-description" {...form.register('description')} />
             </Field>
-            {serverError !== undefined && <p className="text-destructive">{serverError}</p>}
+            {serverError !== undefined && <p className="text-body-sm text-destructive">{serverError}</p>}
           </FieldGroup>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>

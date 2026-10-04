@@ -19,12 +19,12 @@ export function CompanyDetailTabs({ companyId }: { companyId: string }): React.J
     return <p className="text-body-sm">Loading company…</p>;
   }
   if (isError) {
-    return <p className="text-destructive">Could not load the company.</p>;
+    return <p className="text-body-sm text-destructive">Could not load the company.</p>;
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="heading-sm">{company.name}</h1>
           <p className="description-sm">

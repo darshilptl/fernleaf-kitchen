@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
+import { DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/ui/dropdown-menu';
+
 import { Checkbox } from '@repo/ui/components/ui/checkbox';
 import {
   Dialog,
@@ -14,6 +20,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from '@repo/ui/components/ui/field';
 import { Input } from '@repo/ui/components/ui/input';
 import { DataTable } from '@/components/data-table';
+import { StatusBadge } from '@/components/status-badge';
 import {
   useCreateEmployee,
   useEmployees,
@@ -41,10 +48,10 @@ export function EmployeeTable({ companyId }: { companyId: string }): React.JSX.E
   const rows = data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="heading-sm">Employees</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => setImporting(true)}>
             Import CSV
           </Button>
@@ -60,20 +67,30 @@ export function EmployeeTable({ companyId }: { companyId: string }): React.JSX.E
           {
             key: 'status',
             header: 'Status',
-            render: (row) => (row.isActive ? <Badge>Active</Badge> : <Badge>Inactive</Badge>),
+            render: (row) =>
+              row.isActive ? (
+                <StatusBadge tone="success" label="Active" />
+              ) : (
+                <StatusBadge tone="ghost" label="Inactive" />
+              ),
           },
           {
             key: 'actions',
             header: 'Actions',
             render: (row) => (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setEditing(row)}>
-                  Edit
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setActive(row.id, !row.isActive)}>
-                  {row.isActive ? 'Deactivate' : 'Activate'}
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={<Button variant="outline" size="sm">Actions</Button>}
+                />
+                <DropdownMenuContent>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => setEditing(row)}>Edit</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setActive(row.id, !row.isActive)}>
+                      {row.isActive ? 'Deactivate' : 'Activate'}
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ),
           },
         ]}

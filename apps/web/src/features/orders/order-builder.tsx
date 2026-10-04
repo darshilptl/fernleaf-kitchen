@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
+import { Field, FieldGroup, FieldLabel } from '@repo/ui/components/ui/field';
 import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -18,6 +20,7 @@ import type { PreviewItem } from '@/hooks/use-menu';
 import { useReferenceList } from '@/hooks/use-catalogue';
 import { useCreateOrder, useUpdateOrder } from '@/hooks/use-orders';
 import type { OrderDetail } from '@/hooks/use-orders';
+import { DatePicker } from '@/components/date-picker';
 import { CombinationBuilder } from './combination-builder';
 import type { ComboDraft } from './combination-builder';
 
@@ -166,50 +169,49 @@ export function OrderBuilder(props: { order?: OrderDetail; onDone: () => void })
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 flex-col gap-6">
       {error === '' ? null : <p className="text-body-sm text-destructive">{error}</p>}
       {editing === undefined ? (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <p className="text-body-sm font-medium">Company</p>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="order-company">Company</FieldLabel>
             <Select value={companyId === '' ? 'none' : companyId} onValueChange={(value) => setCompanyId(value ?? '')}>
-              <SelectTrigger aria-label="Company">
+              <SelectTrigger id="order-company">
                 <SelectValue placeholder="Choose a company" />
               </SelectTrigger>
               <SelectContent>
+<SelectGroup>
                 {(companies?.items ?? []).map((row) => (
                   <SelectItem key={row.id} value={row.id}>
                     {row.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectGroup>
+</SelectContent>
             </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="text-body-sm font-medium">Employee</p>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="order-employee">Employee</FieldLabel>
             <Select value={employeeId === '' ? 'none' : employeeId} onValueChange={(value) => setEmployeeId(value ?? '')}>
-              <SelectTrigger aria-label="Employee">
+              <SelectTrigger id="order-employee">
                 <SelectValue placeholder="Choose an employee" />
               </SelectTrigger>
               <SelectContent>
+<SelectGroup>
                 {(employees?.items ?? []).map((row) => (
                   <SelectItem key={row.id} value={row.id}>
                     {row.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectGroup>
+</SelectContent>
             </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="text-body-sm font-medium">Delivery date</p>
-            <Input
-              aria-label="Delivery date"
-              type="date"
-              value={deliveryDate}
-              onChange={(event) => setDeliveryDate(event.target.value)}
-            />
-          </div>
-        </div>
+          </Field>
+          <Field>
+            <FieldLabel>Delivery date</FieldLabel>
+            <DatePicker value={deliveryDate} onChange={setDeliveryDate} label="Delivery date" />
+          </Field>
+        </FieldGroup>
       ) : (
         <p className="description-sm">
           {editing.employee.name} · {editing.deliveryDate} · the delivery date cannot change
@@ -217,13 +219,13 @@ export function OrderBuilder(props: { order?: OrderDetail; onDone: () => void })
         </p>
       )}
       {employeeId === '' && editing === undefined ? null : (
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-6">
           <h3 className="heading-sm">Menu</h3>
           {dishes.length === 0 ? (
             <p className="text-body-sm">No dishes available for this employee.</p>
           ) : (
             dishes.map((dish) => (
-              <div key={dish.dishId} className="flex items-center justify-between gap-4">
+              <div key={dish.dishId} className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="text-body font-medium">{dish.name}</p>
                   <p className="text-caption tabular-nums">{formatMoney(dish.priceCents)}</p>
@@ -243,7 +245,7 @@ export function OrderBuilder(props: { order?: OrderDetail; onDone: () => void })
       )}
       {lines.map((line, lineIndex) => (
         <div key={line.dish.dishId} className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-body font-medium">{line.dish.name}</p>
             <Button
               variant="outline"
@@ -299,32 +301,35 @@ export function OrderBuilder(props: { order?: OrderDetail; onDone: () => void })
           </Button>
         </div>
       ))}
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
         <h3 className="heading-sm">Delivery details</h3>
         <p className="description-sm">Leave blank to use the company defaults.</p>
-        <div className="flex flex-col gap-2">
-          <p className="text-body-sm font-medium">Address</p>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="order-address">Address</FieldLabel>
           <Select
             value={addressId === '' ? 'default' : addressId}
             onValueChange={(value) => setAddressId(value === null || value === 'default' ? '' : value)}
           >
-            <SelectTrigger aria-label="Address">
+            <SelectTrigger id="order-address">
               <SelectValue placeholder="Company default" />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               <SelectItem value="default">Company default</SelectItem>
               {(company?.addresses ?? []).map((row) => (
                 <SelectItem key={row.id} value={row.id}>
                   {row.label} · {row.line1}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-body-sm font-medium">Time (minutes after midnight)</p>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="order-time">Time (minutes after midnight)</FieldLabel>
           <Input
-            aria-label="Delivery time"
+            id="order-time"
             type="number"
             min={0}
             max={1439}
@@ -332,28 +337,31 @@ export function OrderBuilder(props: { order?: OrderDetail; onDone: () => void })
             value={deliveryTime}
             onChange={(event) => setDeliveryTime(event.target.value)}
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-body-sm font-medium">Packaging</p>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="order-packaging">Packaging</FieldLabel>
           <Select
             value={packagingId === '' ? 'default' : packagingId}
             onValueChange={(value) => setPackagingId(value === null || value === 'default' ? '' : value)}
           >
-            <SelectTrigger aria-label="Packaging">
+            <SelectTrigger id="order-packaging">
               <SelectValue placeholder={company?.defaultPackaging.name ?? 'Company default'} />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               <SelectItem value="default">Company default</SelectItem>
               {(packaging ?? []).map((row) => (
                 <SelectItem key={row.id} value={row.id}>
                   {row.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
-        </div>
+          </Field>
+        </FieldGroup>
       </div>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="text-body tabular-nums font-medium">Preview {formatMoney(previewTotal)}</p>
         <Button size="sm" onClick={submit} disabled={creating || updating}>
           Save draft

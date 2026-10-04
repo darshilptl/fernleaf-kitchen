@@ -11,6 +11,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -78,7 +79,7 @@ export function CompanyProfileTab({ companyId }: { companyId: string }): React.J
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 flex-col gap-8">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -125,26 +126,28 @@ export function CompanyProfileTab({ companyId }: { companyId: string }): React.J
           </div>
         </FieldGroup>
       </form>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="text-body-sm">Price tier</span>
           <Select
             value={company.priceTierId ?? ''}
             onValueChange={(value) => setTier(value === '' ? null : value)}
           >
-            <SelectTrigger className="w-64">
+            <SelectTrigger aria-label="Price tier" className="w-64">
               <SelectValue placeholder="Default tier" />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               {(tiers ?? []).map((tier) => (
                 <SelectItem key={tier.id} value={tier.id}>
                   {tier.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="text-body-sm">Packaging</span>
           <Select
             value={company.defaultPackagingTypeId}
@@ -154,19 +157,21 @@ export function CompanyProfileTab({ companyId }: { companyId: string }): React.J
               }
             }}
           >
-            <SelectTrigger className="w-64">
+            <SelectTrigger aria-label="Packaging" className="w-64">
               <SelectValue placeholder="Pick packaging" />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               {(packagingTypes ?? []).map((row) => (
                 <SelectItem key={row.id} value={row.id}>
                   {row.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="text-body-sm">Default driver</span>
           <Select
             value={company.defaultDriverId ?? ''}
@@ -174,19 +179,21 @@ export function CompanyProfileTab({ companyId }: { companyId: string }): React.J
               update({ defaultDriverId: value === '' ? null : value })
             }
           >
-            <SelectTrigger className="w-64">
+            <SelectTrigger aria-label="Default driver" className="w-64">
               <SelectValue placeholder="No default driver" />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               {(drivers ?? []).map((driver) => (
                 <SelectItem key={driver.id} value={driver.id}>
                   {driver.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="text-body-sm">
             Owner: {company.owner === null ? 'none' : company.owner.name}
           </span>
@@ -198,16 +205,18 @@ export function CompanyProfileTab({ companyId }: { companyId: string }): React.J
               }
             }}
           >
-            <SelectTrigger className="w-64">
+            <SelectTrigger aria-label="Change owner" className="w-64">
               <SelectValue placeholder="Change owner" />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               {(employeePage?.items ?? []).map((employee) => (
                 <SelectItem key={employee.id} value={employee.id}>
                   {employee.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
         </div>
         <div>

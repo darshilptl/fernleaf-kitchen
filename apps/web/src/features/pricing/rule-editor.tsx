@@ -8,6 +8,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -69,7 +70,7 @@ export function RuleEditor({ tierId }: { tierId: string }): React.JSX.Element {
     <form onSubmit={handleSubmit}>
       <FieldGroup>
         <Field>
-          <FieldLabel>Basis</FieldLabel>
+          <FieldLabel htmlFor="rule-basis">Basis</FieldLabel>
           <Select
             value={basis}
             onValueChange={(value) => {
@@ -78,24 +79,27 @@ export function RuleEditor({ tierId }: { tierId: string }): React.JSX.Element {
               }
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger id="rule-basis">
               <SelectValue placeholder="No derivation" />
             </SelectTrigger>
             <SelectContent>
+<SelectGroup>
               <SelectItem value="none">No derivation</SelectItem>
               <SelectItem value="COST">Cost × multiplier</SelectItem>
               <SelectItem value="TIER">Other tier + percent</SelectItem>
-            </SelectContent>
+            </SelectGroup>
+</SelectContent>
           </Select>
         </Field>
         {basis === 'TIER' && (
           <Field>
-            <FieldLabel>Source tier</FieldLabel>
+            <FieldLabel htmlFor="rule-source">Source tier</FieldLabel>
             <Select value={sourceTierId} onValueChange={(value) => setSourceTierId(value ?? '')}>
-              <SelectTrigger>
+              <SelectTrigger id="rule-source">
                 <SelectValue placeholder="Pick a tier" />
               </SelectTrigger>
               <SelectContent>
+<SelectGroup>
                 {(tiers ?? [])
                   .filter((tier) => tier.id !== tierId)
                   .map((tier) => (
@@ -103,7 +107,8 @@ export function RuleEditor({ tierId }: { tierId: string }): React.JSX.Element {
                       {tier.name}
                     </SelectItem>
                   ))}
-              </SelectContent>
+              </SelectGroup>
+</SelectContent>
             </Select>
           </Field>
         )}
@@ -117,7 +122,7 @@ export function RuleEditor({ tierId }: { tierId: string }): React.JSX.Element {
               onChange={(event) => setMultiplierText(event.target.value)}
               aria-invalid={fieldError !== undefined}
             />
-            {fieldError !== undefined && <p className="text-destructive">{fieldError}</p>}
+            {fieldError !== undefined && <p className="text-body-sm text-destructive">{fieldError}</p>}
           </Field>
         )}
         <div>

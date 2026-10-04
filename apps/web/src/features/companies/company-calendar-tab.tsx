@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
 import { Checkbox } from '@repo/ui/components/ui/checkbox';
+import { Field, FieldLabel, FieldLegend, FieldSet } from '@repo/ui/components/ui/field';
 import { Input } from '@repo/ui/components/ui/input';
 import { useAddHoliday, useCompany, useRemoveHoliday, useUpdateCompany } from '@/hooks/use-companies';
+import { DatePicker } from '@/components/date-picker';
 
 const WEEKDAYS = [
   { value: 1, label: 'Mon' },
@@ -41,25 +43,28 @@ export function CompanyCalendarTab({ companyId }: { companyId: string }): React.
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4">
-        <h2 className="heading-sm">Working days</h2>
-        <div className="flex flex-wrap gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <FieldSet>
+        <FieldLegend>Working days</FieldLegend>
+        <div className="flex flex-row flex-wrap gap-4">
           {WEEKDAYS.map((day) => (
-            <label key={day.value} className="flex items-center gap-2 text-body-sm">
+            <Field key={day.value} orientation="horizontal">
               <Checkbox
+                id={`company-day-${day.value}`}
                 checked={company.workingDays.includes(day.value)}
                 onCheckedChange={(checked) => toggleDay(company.workingDays, day.value, checked === true)}
               />
-              {day.label}
-            </label>
+              <FieldLabel htmlFor={`company-day-${day.value}`} className="font-normal">
+                {day.label}
+              </FieldLabel>
+            </Field>
           ))}
         </div>
-      </div>
-      <div className="flex flex-col gap-4">
+      </FieldSet>
+      <div className="flex min-w-0 flex-col gap-6">
         <h2 className="heading-sm">Holidays</h2>
         {company.holidays.map((holiday) => (
-          <div key={holiday.id} className="flex items-center justify-between gap-4">
+          <div key={holiday.id} className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-body-sm">
               {holiday.date.slice(0, 10)} {holiday.name ?? ''}
             </p>
@@ -69,7 +74,6 @@ export function CompanyCalendarTab({ companyId }: { companyId: string }): React.
           </div>
         ))}
         <form
-          className="flex items-center gap-2"
           onSubmit={(event) => {
             event.preventDefault();
             if (date !== '') {
@@ -79,21 +83,24 @@ export function CompanyCalendarTab({ companyId }: { companyId: string }): React.
             }
           }}
         >
-          <Input
-            aria-label="Holiday date"
-            type="date"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-          />
-          <Input
-            aria-label="Holiday name"
-            placeholder="Name (optional)"
-            value={holidayName}
-            onChange={(event) => setHolidayName(event.target.value)}
-          />
-          <Button type="submit" size="sm">
-            Add
-          </Button>
+          <div className="flex flex-wrap items-end gap-4">
+            <Field>
+              <FieldLabel>Date</FieldLabel>
+              <DatePicker value={date} onChange={setDate} label="Holiday date" />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="company-holiday-name">Name</FieldLabel>
+              <Input
+                id="company-holiday-name"
+                placeholder="Optional"
+                value={holidayName}
+                onChange={(event) => setHolidayName(event.target.value)}
+              />
+            </Field>
+            <Button type="submit" size="sm">
+              Add
+            </Button>
+          </div>
         </form>
       </div>
     </div>

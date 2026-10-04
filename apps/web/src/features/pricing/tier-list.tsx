@@ -38,8 +38,8 @@ export function TierList({
   const rows = tiers ?? [];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="heading-sm">Pricing tiers</h1>
         <Button size="sm" onClick={() => setCreating(true)}>
           New tier
@@ -63,7 +63,7 @@ export function TierList({
             key: 'actions',
             header: 'Actions',
             render: (row) => (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" onClick={() => onSelect(row.id)}>
                   {selectedId === row.id ? 'Selected' : 'Open'}
                 </Button>
@@ -129,7 +129,7 @@ function TierDialog({ onClose }: { onClose: () => void }): React.JSX.Element {
                 aria-invalid={nameError !== undefined}
                 {...form.register('name')}
               />
-              {nameError !== undefined && <p className="text-destructive">{nameError}</p>}
+              {nameError !== undefined && <p className="text-body-sm text-destructive">{nameError}</p>}
             </Field>
           </FieldGroup>
           <DialogFooter>
