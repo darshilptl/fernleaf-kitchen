@@ -42,4 +42,10 @@ export class SettingsController {
   removeHoliday(@Param('id') id: string) {
     return this.settings.removeHoliday(id);
   }
+
+  @RequirePermission('settings.manage')
+  @Post('demo-data/refresh')
+  refreshDemoData() {
+    return this.settings.refreshDemoData();
+  }
 }

@@ -119,3 +119,22 @@ export function useRemoveHoliday(): { remove: (id: string) => void } {
   });
   return { remove: (id) => mutation.mutate(id) };
 }
+
+export function useRefreshDemoData(): { refresh: () => void; isPending: boolean } {
+  const invalidate = useInvalidateSettings();
+  const mutation = useMutation({
+    mutationFn: () =>
+      apiRequest<{ orders: number; invoices: number; skipped: boolean }>(
+        '/api/settings/demo-data/refresh',
+        { method: 'POST' },
+      ),
+    onSuccess: (result) => {
+      invalidate();
+      notifySuccess(
+        result.skipped ? 'Demo data already present' : `Demo data refreshed: ${result.orders} orders`,
+      );
+    },
+    onError: (error: unknown) => notifyError(error, 'Could not refresh demo data'),
+  });
+  return { refresh: () => mutation.mutate(), isPending: mutation.isPending };
+}

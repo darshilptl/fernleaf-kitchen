@@ -11,7 +11,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import { applyServerErrors } from '@/lib/apply-server-errors';
 import { notifyError } from '@/lib/notify';
 import { ApiError } from '@/lib/api-client';
-import { useSettings, useUpdateSettings } from '@/hooks/use-settings';
+import { useRefreshDemoData, useSettings, useUpdateSettings } from '@/hooks/use-settings';
 import { HolidayList } from './holiday-list';
 
 function toMinuteInput(minute: number): string {
@@ -41,6 +41,7 @@ function fromMinuteInput(value: string): number | null {
 export function SettingsForm(): React.JSX.Element {
   const { settings, isLoading, isError, refetch } = useSettings();
   const { update, isPending } = useUpdateSettings();
+  const { refresh, isPending: refreshing } = useRefreshDemoData();
   const [workingDays, setWorkingDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const form = useForm<SettingsInput>({ resolver: zodResolver(settingsSchema) });
 
@@ -61,7 +62,7 @@ export function SettingsForm(): React.JSX.Element {
   }
   if (isError) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-8">
         <p className="text-body-sm">Could not load the settings.</p>
         <Button variant="outline" size="sm" onClick={refetch}>
           Retry
@@ -71,7 +72,7 @@ export function SettingsForm(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex min-w-0 flex-col gap-8">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -121,9 +122,12 @@ export function SettingsForm(): React.JSX.Element {
             />
           </Field>
         </FieldGroup>
-        <div className="mt-4">
+        <div className="mt-6 flex flex-wrap gap-4">
           <Button type="submit" size="sm" disabled={isPending}>
             Save settings
+          </Button>
+          <Button type="button" variant="outline" size="sm" disabled={refreshing} onClick={refresh}>
+            Refresh demo data
           </Button>
         </div>
       </form>

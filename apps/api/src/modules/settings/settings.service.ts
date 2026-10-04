@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DomainError, fromDbDate } from '@repo/shared';
 import type { CalendarDate, KitchenHolidayInput, SettingsInput } from '@repo/shared';
+import { seedPart2 } from '../../../prisma/seed/part-2.js';
 import { PrismaService } from '../../database/prisma.service.js';
 import { logAction } from '../../common/logging/logging.interceptor.js';
 
@@ -88,6 +89,20 @@ export class SettingsService {
     }
     logAction(this.logger, 'settings.holiday-remove', {});
     return { ok: true };
+  }
+
+  /**
+   * Admin-only demo refresh: tops up today's demo set through the
+   * same idempotent seeder the boot hook runs. PDF §2 (reviewers
+   * judge by clicking; empty screens hurt).
+   */
+  async refreshDemoData(): Promise<{ orders: number; invoices: number; skipped: boolean }> {
+    const result = await seedPart2(this.prisma);
+    logAction(this.logger, 'settings.demo-refresh', {
+      orders: result.orders,
+      invoices: result.invoices,
+    });
+    return result;
   }
 
   private async requireSettings(): Promise<{
