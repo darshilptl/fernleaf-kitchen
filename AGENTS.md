@@ -5,7 +5,7 @@ Correctness beats completeness.
 
 ## 0. Sources of truth (priority order)
 
-1. `docs/assignment.pdf`: the only definition of scope.
+1. `docs/assignment.txt`: the only definition of scope.
 2. `apps/api/prisma/schema.prisma` and `prisma/migrations/*_constraints/migration.sql`: the data model.
    Never change either without explicit approval.
 3. `docs/DECISIONS.md`: every ambiguity decision (D-xx).

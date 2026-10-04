@@ -31,7 +31,7 @@ function GithubIcon({ className }: { className?: string }) {
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <header className="top-0 z-50 w-full">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         {/* Left: brand */}
         <Link
@@ -62,7 +62,11 @@ export default function Navbar() {
               <span>{GITHUB_LINK.label}</span>
             </a>
           </Button>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            className="rounded-lg ring-1 ring-primary/30 ring-offset-1 hover:ring-offset-1"
+            size="sm"
+          >
             <Link href={LOGIN_LINK.href}>{LOGIN_LINK.label}</Link>
           </Button>
         </div>

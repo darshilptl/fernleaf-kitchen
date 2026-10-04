@@ -20,7 +20,7 @@ Deploy after module 1 and after every group of modules. A live link that works b
 3. Plan: write `docs/modules/<module>/implementation.md` from the template below.
 4. Wait: STOP. Do not write implementation code until the user explicitly approves the plan.
 5. Execute: exactly the approved plan. No extras. A new need = stop and re-plan.
-6. Gate: `pnpm tsc --noEmit` (or `npx tsc --noEmit`), `pnpm lint`, backend also `pnpm test` and `pnpm prisma validate`.
+6. the gate is pnpm check-types && pnpm lint && pnpm test, plus pnpm --filter api prisma generate.
    Fix everything. Report the results. If anything is unclear: ask.
 7. Close: append approved D-entries to `docs/DECISIONS.md`, commit in small Conventional Commits.
 

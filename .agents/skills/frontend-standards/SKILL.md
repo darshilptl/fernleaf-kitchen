@@ -33,7 +33,7 @@ size (the file registers sizes as `--font-size-*`; Tailwind v4 documents `--text
 
 ## Components
 
-shadcn first (`components/ui`): Sidebar, Table, Badge, Button, Input, Select, Dialog, Sheet, Tabs, Skeleton, Calendar/Popover, Form
+shadcn components live in packages/ui/src/components/ui and are imported as @repo/ui/... : Sidebar, Table, Badge, Button, Input, Select, Dialog, Sheet, Tabs, Skeleton, Calendar/Popover, Form
 primitives. Compose, never rebuild. Toasts only through the installed Base UI `toast` manager (`ui/toast.tsx`).
 Status badge: one `StatusBadge` per status set (order, kitchen lateness, invoice) = small dot (`bg-success|warning|destructive|info`
 or `bg-foreground-ghost`) + `text-caption text-foreground-muted` label. Always icon or label, never colour alone.

@@ -18,7 +18,7 @@ description: Use whenever the PDF is silent or ambiguous, when two readings are 
    `| D-<next number> | PDF section | Ambiguity | Decision | Why | Alternative |`
 4. If it is an ADDITION beyond the PDF, label it "Beyond the PDF", leave it unbuilt, and wait for approval.
 5. Put the proposed entry in the module plan (`implementation.md`) so the user sees it before execution.
-6. Never reopen an approved decision (D-01 to D-75). If one blocks you, flag it and wait.
+6. Never reopen an approved decision (D-01 to D-76). If one blocks you, flag it and wait.
 
 ## Never
 

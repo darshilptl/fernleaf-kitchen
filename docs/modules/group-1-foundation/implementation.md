@@ -1,5 +1,7 @@
 # Group 1 foundation — modules 0, 1, 2 (backend + frontend)
 
+Status: COMPLETE (verified by the user).
+
 PDF sections: 2 (stack, live deploy, data), 3 (roles/permissions), 4.1 (catalogue Must only), 4.2 (deferred — noted only), 4.10 (settings row only), 7 (money/timezone/concurrency/validation/pagination/lint/type/tests), 8 (deliverables).
 Skills read: module-workflow, auth-permissions, catalogue-and-menu (Must subset), frontend-standards, ambiguity-log. Pricing/time-cutoff touched only for constants placement, not implemented.
 Decisions touched: D-01, D-02, D-03, D-04, D-43 (Asia/Kolkata constant home, not implemented here), D-75 (Admin excludes deliveries.assignable), D-39/D-35 (deferred to menu module), D-77 (approved: demo marker = inactive system staff `seed@fernleaf.test` as creator + known seed keys; no schema change). D-01–D-76 frozen; DECISIONS.md overrides skill prose. At the checkpoint this plan appends D-78 (staff passwords minimum 8 characters; PDF silent) and D-79 (the four seed accounts are re-asserted on every boot: password, role, active).

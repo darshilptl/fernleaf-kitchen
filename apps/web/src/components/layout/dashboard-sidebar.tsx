@@ -1,8 +1,8 @@
-'use client';
+"use client"
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { LogOut } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -17,10 +17,10 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-} from '@repo/ui/components/ui/sidebar';
-import { useSession } from '@/hooks/use-session';
-import { visibleNavGroups } from '@/lib/nav';
-import type { Session } from '@/lib/session';
+} from "@repo/ui/components/ui/sidebar"
+import { useSession } from "@/hooks/use-session"
+import { visibleNavGroups } from "@/lib/nav"
+import type { Session } from "@/lib/session"
 
 /**
  * Single shared dashboard shell for every role. The server
@@ -34,25 +34,27 @@ export function DashboardSidebar({
   session,
   children,
 }: {
-  session: Session;
-  children: React.ReactNode;
+  session: Session
+  children: React.ReactNode
 }): React.JSX.Element {
-  const pathname = usePathname();
-  const { logout } = useSession();
-  const groups = visibleNavGroups(session.permissions);
+  const pathname = usePathname()
+  const { logout } = useSession()
+  const groups = visibleNavGroups(session.permissions)
   const activeLabel = groups
     .flatMap((group) => group.items)
-    .find((item) => isNavActive(pathname, item.href))?.label;
+    .find((item) => isNavActive(pathname, item.href))?.label
 
   return (
-    <SidebarProvider className="min-h-0">
+    <SidebarProvider className="min-h">
       <Sidebar collapsible="icon" className="sticky top-0 h-svh shrink-0">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
               <div className="flex min-w-0 flex-col gap-0.5 px-2 py-1 text-left">
-                <span className="text-body-sm truncate font-medium">{session.name}</span>
-                <span className="text-caption text-foreground-muted truncate">
+                <span className="text-body-sm truncate font-medium">
+                  {session.name}
+                </span>
+                <span className="text-caption truncate text-foreground-muted">
                   {session.email}
                 </span>
               </div>
@@ -88,7 +90,7 @@ export function DashboardSidebar({
               <SidebarMenuButton
                 tooltip="Logout"
                 onClick={() => {
-                  void logout();
+                  void logout()
                 }}
               >
                 <LogOut />
@@ -104,17 +106,19 @@ export function DashboardSidebar({
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             {activeLabel !== undefined && (
-              <span className="text-caption text-foreground-muted">{activeLabel}</span>
+              <span className="text-caption text-foreground-muted">
+                {activeLabel}
+              </span>
             )}
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }
 
 /** Exact match plus child-route prefix (e.g. /admin/orders/123). */
 function isNavActive(pathname: string, href: string): boolean {
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === href || pathname.startsWith(`${href}/`)
 }

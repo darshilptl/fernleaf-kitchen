@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils"
 
 type PageGridProps = {
-  children: React.ReactNode;
-  className?: string;
-};
+  children: React.ReactNode
+  className?: string
+}
 
 function PageGridRails() {
   return (
@@ -17,7 +17,7 @@ function PageGridRails() {
         className="pointer-events-none absolute inset-y-0 right-0 z-0 w-px bg-border"
       />
     </>
-  );
+  )
 }
 
 /**
@@ -31,10 +31,10 @@ function PageGridRails() {
 export function PageGrid({ children, className }: PageGridProps) {
   return (
     <div className="relative overflow-x-clip">
-      <div className={cn('relative mx-auto w-full max-w-6xl', className)}>
+      <div className={cn("relative mx-auto w-full max-w-6xl p-0.5", className)}>
         <PageGridRails />
         <div className="relative z-10">{children}</div>
       </div>
     </div>
-  );
+  )
 }
