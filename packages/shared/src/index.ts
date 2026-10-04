@@ -7,7 +7,14 @@ export type { PermissionKey } from './permissions.js';
 export { DomainError, ERROR_CODES } from './errors.js';
 export type { ApiErrorItem, ErrorCode } from './errors.js';
 export { formatMoney, parseMoney } from './money.js';
-export { ceilToFiveCents, parseMultiplier } from './pricing.js';
+export { ceilToFiveCents, parseMultiplier, comboKey, computeOrderTotals } from './pricing.js';
+export type {
+  ComboChoiceInput,
+  PricedCombination,
+  PricedCombinationInput,
+  PricedLine,
+  PricedLineInput,
+} from './pricing.js';
 export { parseCsv } from './csv.js';
 export type { CsvRow, ParsedCsv } from './csv.js';
 export {
@@ -20,6 +27,9 @@ export {
 } from './calendar.js';
 export type { CalendarDate } from './calendar.js';
 export { KITCHEN_TIME_ZONE, addDays, kitchenToday } from './time.js';
+export { toKitchenInstant, fromDbDate, toDbDate } from './time.js';
+export { cutoffInstant, isLocked } from './cutoff.js';
+export type { CutoffSettings } from './cutoff.js';
 export { loginSchema } from './schemas/auth.js';
 export type { LoginInput } from './schemas/auth.js';
 export { sessionSchema } from './schemas/session.js';
@@ -65,3 +75,30 @@ export { reorderSchema, menuPreviewQuerySchema, menuPlacementUpdateSchema } from
 export type { MenuPlacementUpdateInput } from './schemas/menu.js';
 export { staffListQuerySchema, createStaffSchema, changeRoleSchema } from './schemas/staff.js';
 export type { StaffListQuery, StaffListQueryData, CreateStaffInput, ChangeRoleInput } from './schemas/staff.js';
+export { settingsSchema, kitchenHolidaySchema } from './schemas/settings.js';
+export type { SettingsInput, KitchenHolidayInput } from './schemas/settings.js';
+export {
+  orderChoiceSchema,
+  orderCombinationSchema,
+  orderLineSchema,
+  orderDetailsSchema,
+  createOrderSchema,
+  updateOrderSchema,
+  versionSchema,
+  rejectOrderSchema,
+  overrideDetailsSchema,
+  orderListQuerySchema,
+} from './schemas/orders.js';
+export type {
+  OrderChoiceInput,
+  OrderCombinationInput,
+  OrderLineInput,
+  OrderDetailsInput,
+  CreateOrderInput,
+  UpdateOrderInput,
+  OrderVersionInput,
+  RejectOrderInput,
+  OverrideDetailsInput,
+  OrderListQuery,
+  OrderListQueryData,
+} from './schemas/orders.js';

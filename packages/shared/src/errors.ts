@@ -43,6 +43,10 @@ export const ERROR_CODES = [
   'CSV_TOO_LARGE',
   'MENU_NOT_FOUND',
   'MENU_SLUG_TAKEN',
+  'ORDER_STATE_CONFLICT',
+  'ORDER_INVOICED',
+  'ORDER_LOCKED',
+  'CUTOFF_CONFIG_INVALID',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];

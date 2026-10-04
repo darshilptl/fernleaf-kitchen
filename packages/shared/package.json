@@ -14,7 +14,8 @@
     "build": "tsc -p tsconfig.build.json",
     "check-types": "tsc --noEmit",
     "lint": "oxlint --type-aware src/",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:tz": "TZ=UTC vitest run && TZ=America/Los_Angeles vitest run"
   },
   "dependencies": {
     "luxon": "^3.7.2",

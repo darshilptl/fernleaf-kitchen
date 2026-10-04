@@ -51,3 +51,69 @@ function parseDecimalPart(whole: string, fraction: string | undefined): number {
   const padded = (fraction ?? '').padEnd(4, '0');
   return Number.parseInt(whole, 10) * 10000 + Number.parseInt(padded, 10);
 }
+
+export interface ComboChoiceInput {
+  groupId: string;
+  optionId: string;
+  sizeId: string | null;
+}
+
+export interface PricedCombinationInput {
+  quantity: number;
+  dishPriceCents: number;
+  options: Array<{ optionPriceCents: number; portionExtraCents: number }>;
+}
+
+export interface PricedLineInput {
+  combinations: PricedCombinationInput[];
+}
+
+export interface PricedCombination {
+  unitPriceCents: number;
+  totalCents: number;
+}
+
+export interface PricedLine {
+  combinations: PricedCombination[];
+  lineTotalCents: number;
+}
+
+/**
+ * Canonical combination key. PDF §4.6 / D-54. Single owner with
+ * order totals: sorted `groupId:optionId:sizeId` joined by `|`,
+ * empty string when the dish has no groups. No two combinations
+ * in a line share a key.
+ */
+export function comboKey(choices: readonly ComboChoiceInput[]): string {
+  return [...choices]
+    .map((choice) => `${choice.groupId}:${choice.optionId}:${choice.sizeId ?? ''}`)
+    .sort()
+    .join('|');
+}
+
+/**
+ * Order totals in integer cents. PDF §4.6. Single owner of the
+ * arithmetic: `unit = dish + sum(option + portionExtra)`,
+ * `comboTotal = unit * quantity`, `line = sum(combos)`,
+ * `order = sum(lines)`. No tax, no fees.
+ */
+export function computeOrderTotals(lines: readonly PricedLineInput[]): {
+  lines: PricedLine[];
+  totalCents: number;
+} {
+  const priced = lines.map((line) => {
+    const combinations = line.combinations.map((combination) => {
+      const unitPriceCents =
+        combination.dishPriceCents +
+        combination.options.reduce(
+          (sum, option) => sum + option.optionPriceCents + option.portionExtraCents,
+          0,
+        );
+      return { unitPriceCents, totalCents: unitPriceCents * combination.quantity };
+    });
+    const lineTotalCents = combinations.reduce((sum, row) => sum + row.totalCents, 0);
+    return { combinations, lineTotalCents };
+  });
+  const totalCents = priced.reduce((sum, line) => sum + line.lineTotalCents, 0);
+  return { lines: priced, totalCents };
+}

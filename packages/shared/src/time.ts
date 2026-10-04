@@ -27,3 +27,33 @@ export function addDays(date: CalendarDate, n: number): CalendarDate {
   const dd = String(out.getUTCDate()).padStart(2, '0');
   return `${out.getUTCFullYear()}-${mm}-${dd}`;
 }
+
+/**
+ * That local kitchen time on a calendar date, as a UTC instant.
+ * PDF §4.10 / D-43. The ONLY local-to-UTC constructor; DST-free
+ * zone so the mapping is unambiguous. Group 6 addition.
+ */
+export function toKitchenInstant(date: CalendarDate, minuteOfDay: number): Date {
+  return DateTime.fromFormat(date, 'yyyy-MM-dd', { zone: KITCHEN_TIME_ZONE })
+    .startOf('day')
+    .plus({ minutes: minuteOfDay })
+    .toJSDate();
+}
+
+/**
+ * Read a Prisma `@db.Date` value as a CalendarDate. UTC getters
+ * only: the stored value is a dateless calendar day.
+ */
+export function fromDbDate(value: Date): CalendarDate {
+  const mm = String(value.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(value.getUTCDate()).padStart(2, '0');
+  return `${value.getUTCFullYear()}-${mm}-${dd}`;
+}
+
+/**
+ * Write a CalendarDate to a Prisma `@db.Date` value. The only
+ * code that constructs `@db.Date` inputs, with `fromDbDate`.
+ */
+export function toDbDate(date: CalendarDate): Date {
+  return new Date(`${date}T00:00:00.000Z`);
+}
