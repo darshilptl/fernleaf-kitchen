@@ -1,6 +1,7 @@
 {
   "name": "api",
   "version": "0.0.1",
+  "type": "module",
   "description": "",
   "author": "",
   "private": true,
@@ -8,6 +9,7 @@
   "moduleFormat": "esm",
   "scripts": {
     "build": "nest build",
+    "check-types": "tsc --noEmit",
     "deploy": "nest deploy",
     "dev": "nest start --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -31,6 +33,7 @@
     "@nestjs/schedule": "^12.0.2",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "7.10.0",
+    "@repo/shared": "workspace:*",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.5",
