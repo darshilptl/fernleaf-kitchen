@@ -31,14 +31,21 @@ function GithubIcon({ className }: { className?: string }) {
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         {/* Left: brand */}
         <Link
           href={BRAND.href}
           className="flex w-fit items-center gap-2 text-sm font-medium text-foreground"
         >
-          <Image src={BRAND.icon} alt="" width={30} height={30} priority />
+          <Image
+            src={BRAND.icon}
+            alt=""
+            width={30}
+            height={30}
+            className="h-auto w-auto"
+            priority
+          />
           <span>{BRAND.name}</span>
         </Link>
 

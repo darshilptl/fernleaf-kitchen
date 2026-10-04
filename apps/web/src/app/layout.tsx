@@ -3,8 +3,11 @@ import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import Navbar from "@/components/Navbar"
+import { GridBoundary } from "@/components/layout/grid-boundary"
+import { PageGrid } from "@/components/layout/page-grid"
 import { Toaster } from "@repo/ui/components/ui/toast"
 import { ThemeProvider } from "@/providers/theme-provider"
+import { Footer } from "@/components/Footer"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,8 +41,13 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          <Navbar />
-          {children}
+          <PageGrid>
+            <Navbar />
+            <GridBoundary />
+            {children}
+            <GridBoundary />
+            <Footer />
+          </PageGrid>
           <Toaster />
         </ThemeProvider>
       </body>

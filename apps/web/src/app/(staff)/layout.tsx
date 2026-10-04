@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { DashboardFrame } from '@/components/layout/dashboard-frame';
 import { loadStaffSession } from '@/lib/staff-session';
 import { QueryProvider } from '@/providers/query-provider';
 
@@ -16,5 +17,9 @@ export default async function StaffLayout({
   if (session === null) {
     redirect('/login');
   }
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <QueryProvider>
+      <DashboardFrame>{children}</DashboardFrame>
+    </QueryProvider>
+  );
 }
