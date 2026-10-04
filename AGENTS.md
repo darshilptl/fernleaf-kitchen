@@ -105,8 +105,9 @@ packages/shared/src/{permissions, enums, money, time, cutoff, calendar, pricing,
    tokens. No hardcoded colours, no arbitrary Tailwind values (`w-[13px]`, `text-[#abc]`).
 6. Use shadcn components (`components/ui`) instead of building your own. Extend by composition only.
 7. Libraries: Motion (`motion/react`) for animation, `react-hook-form` + `@hookform/resolvers` for forms,
-   `zod` for ALL validation, the installed Base UI toast (`ui/toast.tsx`, `toast` manager) for toasts,
-   `next-themes` only if a theme requirement is explicitly approved (default: light only).
+   `zod` for ALL validation, toasts only through the Base UI toast manager via `lib/notify.ts`
+   (`notifyError`/`notifySuccess`; never sonner), `next-themes` only if a theme requirement is
+   explicitly approved (default: light only).
 8. Forms: every user input has a Zod schema (from `packages/shared`) -> inferred TS type ->
    `react-hook-form` with `zodResolver`. Never validate by hand inline.
 9. Data fetching and shared behaviour live in custom hooks under `src/hooks/` (TanStack Query allowed
@@ -185,6 +186,44 @@ For every module:
   dashboard definitions, prioritisation notes (built, skipped and why, next steps, ambiguities).
 - The live app must keep running two weeks after submission and contain realistic data (skill: seed-demo-data).
 
-## 11a. UI shell contract
+## 11a. Also user-owned (design done by the user; wire only, never restyle)
 
-- The dashboard/landing shell contract lives in `docs/ui-shell.md`. Build every screen inside it.
+Landing page (hero), footer, app shell and dashboard layout. Their structure is the binding layout contract in docs/ui-shell.md.
+
+## 12. UI standard (every new screen; minimal, Linear-grade; correctness first, polish later)
+
+1. Every screen lives inside the app shell contract in docs/ui-shell.md. Page = page header + content region exactly as that contract shows. Never invent a new layout pattern.
+2. Every list of records is a table: ONE reusable `DataTable` built on shadcn `Table`. Required: server-side pagination, sorting and filters (PDF 7), dense rows, sticky header,
+   `tabular-nums` for numbers, status via a dot+text StatusBadge, row actions in a dropdown menu, skeleton loading rows, `Empty` state, error state with retry, keyboard focus. Tokens only.
+3. Reference project (read-only study) for tables, data-grid, catalogue, menu, company/employee detail and order screens:
+   "/home/darshil/Desktop/Vs Project/Development LAB/store" (the path has spaces: always quote it). Never copy unreviewed: audit against sections 1 to 5 first and drop hardcoded colours,
+   arbitrary values, `any` and dead code. Do better than the reference. A new table dependency (e.g. @tanstack/react-table) needs my approval in the plan.
+4. Actions: create/edit in `Sheet` (or `Dialog` when small). Destructive or irreversible actions (deactivate, cancel, reject, mark paid, remove from invoice) use `AlertDialog` that states the consequence.
+   Success and failure feedback through the Base UI toast manager (`lib/notify.ts`; do NOT add sonner). Server errors map to fields with `applyServerErrors`; unmapped errors show as a toast with the message, never the raw code.
+5. Every screen has loading (Skeleton), empty (Empty), error (retry) and success states. No fake data, no placeholder numbers.
+
+## 13. Action logging (terminal; backend only; D-80)
+
+Nest built-in `Logger`, no extra library, nothing persisted (PDF 5 allows console logging; audit logs are out of scope).
+
+- One global interceptor logs every request: method, path, status, duration, actor id or `anon` (4xx warn, 5xx error with stack).
+- Every state-changing domain action logs one line through `logAction(logger, name, fields)` in `common/logging/`, e.g. `[action] order.place order=<id> actor=<id> from=DRAFT to=PLACED`.
+  Used by `transitionOrder()`, the cut-off job (counts), kitchen and dispatch steps, billing, staff, pricing, company, employee and menu changes, and seeding.
+- Never log passwords, tokens, cookies, request bodies, hashes, or emails. Failed login logs `auth.login.failed reason=<code>` only.
+
+## 14. Commit protocol
+
+1. Never commit during execution.
+2. Only when the user says "group N approved" (after his manual check): rerun `pnpm check-types && pnpm lint && pnpm test`; run `git status` and `git diff --stat`; if any of
+   `.env*`, `docs/assignment.*`, `src/generated`, spike or temp files, `node_modules`, `dist`, `.next` appear, STOP and report.
+3. Stage and commit in small logical commits (one per module or coherent step, never one blob). Conventional Commits, `type(scope): imperative subject` of at most 72 characters,
+   body = what and why plus PDF sections and D-IDs. Never "update", "fix stuff" or "changes". Show `git log --oneline` afterwards. Do not push unless told. Do not change git config.
+4. After committing, do ONLY the next group's PLAN step (write the plan), then stop for approval. Never implement an unapproved plan.
+
+## 15. Plan audit (a plan is not executable until audited and approved)
+
+An AUDIT pass compares every item of `implementation.md` with docs/assignment.txt, docs/DECISIONS.md, the schema and the skills, and appends a traceability table:
+plan item, PDF section (quote of at most 15 words), D-ID or skill rule, verdict OK / CONTRADICTION / UNSUPPORTED / AMBIGUOUS. Fix contradictions in place, remove or label "Beyond the PDF" every unsupported item,
+propose a D-entry for each ambiguity. Repeat until there are zero contradictions and zero unlabeled unsupported items. Also verify every [Must] in the covered PDF sections has a plan item, every schema field
+used exists, every permission key exists in PERMISSIONS, no role-name checks, money in cents, time through shared helpers.
+Decision IDs: read DECISIONS.md first; an ID that exists is taken; new entries continue after the highest ID; never reuse an ID.

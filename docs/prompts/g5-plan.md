@@ -1,0 +1,9 @@
+PLAN ONLY. Do not implement. Read the same sources, plus the skills seed-demo-data and dashboards.
+Write ONE docs/modules/group-5-finish/implementation.md for modules 11 (seed), 12 (dashboards), 13 (README and final checks). Cover:
+
+- Seed: ensureDemoData built through the real services, date-relative, idempotent, marker per D-77, all required content from the seed skill, never Draft or Placed on past-cut-off dates.
+- Dashboards: FIRST the definition table for every figure (docs/dashboards.md: role, figure, why, orders counted, date basis, cancelled and missing data, formula, what is not shown), then their implementation inside my dashboard shell.
+- README: setup, architecture, Mermaid data model diagram from the schema, decisions link, dashboard definitions, honest prioritisation (built, skipped and why, next steps, interpreted ambiguities).
+- Final audit: a table mapping every [Must] in assignment.txt to evidence (file, test or screen) or to an honest "not built"; deployment checklist verification; /status page; cleanup of leftovers.
+  End with files, manual check list, proposed D-entries. Stop and wait.
+- Once this plan is written, stop implementation and run `docs/AUDIT.md` against the completed plan. The audit must be completed and all contradictions resolved, unsupported items labeled or removed, and proposed D-entries recorded as required by `docs/AUDIT.md`. Stop and wait for my approval of the audited plan. Do not implement anything before I explicitly approve it. Once I approve the audited plan, execute it strictly according to `docs/EXECUTE.md`. After execution is complete, I will manually test the implemented work and confirm that the plan has been fully implemented and everything is working correctly. Only after my confirmation, run `docs/COMMIT.md` and create the commit according to its instructions.

@@ -1,0 +1,8 @@
+PLAN ONLY. Do not implement. Read the same sources, plus the skills kitchen-dispatch and billing.
+Write ONE docs/modules/group-4-floor/implementation.md for modules 8 (kitchen), 9 (dispatch and driver), 10 (billing), backend and frontend. Cover:
+
+- Kitchen board (date, station filter, units with start and done, late and at-risk visuals via StatusBadge and left border, force-complete), unit transitions under the parent order row lock, tests including two parallel "done" calls.
+- Dispatch board (drops as a grouping query, driver assignment, dispatch-ready, out for delivery, whole-drop transactions) and the mobile driver view (own drops today, mark delivered with note; photo last as optional); on-time recording.
+- Billing (billable list per company, create invoice with locked rows, mark paid, remove from an unpaid invoice, paid invoices immutable, cancel or reject blocked when invoiced) and the invoicing tests.
+  UI per AGENTS section 12, logging per section 13. End with files, manual check list, proposed D-entries. Stop and wait.
+- Once this plan is written, stop implementation and run `docs/AUDIT.md` against the completed plan. The audit must be completed and all contradictions resolved, unsupported items labeled or removed, and proposed D-entries recorded as required by `docs/AUDIT.md`. Stop and wait for my approval of the audited plan. Do not implement anything before I explicitly approve it. Once I approve the audited plan, execute it strictly according to `docs/EXECUTE.md`. After execution is complete, I will manually test the implemented work and confirm that the plan has been fully implemented and everything is working correctly. Only after my confirmation, run `docs/COMMIT.md` and create the commit according to its instructions.

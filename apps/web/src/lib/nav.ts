@@ -5,8 +5,10 @@ import {
   BookOpen,
   Package,
   Truck,
-  Receipt,
   Users,
+  Coins,
+  Building2,
+  UtensilsCrossed,
 } from 'lucide-react';
 import type { PermissionKey } from '@repo/shared';
 
@@ -42,9 +44,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     label: 'Manage',
     items: [
       { label: 'Catalogue', href: '/admin/catalogue', permission: 'catalogue.read', icon: BookOpen },
-      { label: 'Orders', href: '/admin/orders', permission: 'orders.read', icon: ClipboardList },
-      { label: 'Billing', href: '/admin/billing', permission: 'billing.read', icon: Receipt },
       { label: 'Staff', href: '/admin/staff', permission: 'staff.manage', icon: Users },
+      { label: 'Pricing', href: '/admin/pricing', permission: 'pricing.read', icon: Coins },
+      { label: 'Companies', href: '/admin/companies', permission: 'companies.read', icon: Building2 },
+      { label: 'Menu', href: '/admin/menu', permission: 'menu.read', icon: UtensilsCrossed },
     ],
   },
 ];

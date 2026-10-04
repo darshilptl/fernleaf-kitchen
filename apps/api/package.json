@@ -10,6 +10,7 @@
   "scripts": {
     "build": "nest build",
     "check-types": "tsc --noEmit",
+    "db:seed": "prisma db seed",
     "deploy": "nest deploy",
     "dev": "nest start --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

@@ -54,6 +54,19 @@ describe('PermissionGuard', () => {
     });
   });
 
+  it('denies staff.manage to a role that lacks it', async () => {
+    const kitchen = await prisma.staffUser.findUniqueOrThrow({
+      where: { email: 'kitchen@test.com' },
+    });
+    const token = jwt.sign({ sub: kitchen.id });
+    const handler = (): void => {};
+    Reflect.defineMetadata('permission', 'staff.manage', handler);
+    const { context } = contextFor(handler, { fnl_session: token });
+    await expect(guard.canActivate(context)).rejects.toMatchObject({
+      code: 'PERMISSION_DENIED',
+    });
+  });
+
   it('denies a missing permission key with PERMISSION_DENIED and attaches the user when allowed', async () => {
     const driver = await prisma.staffUser.findUniqueOrThrow({
       where: { email: 'driver@test.com' },

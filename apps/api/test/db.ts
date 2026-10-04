@@ -1,4 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
+import type { CreateCompanyInput } from '@repo/shared';
+import { CompaniesService } from '../src/modules/companies/companies.service.js';
+import type { PrismaService } from '../src/database/prisma.service.js';
 
 /**
  * Test-database helpers. Every spec file calls `truncateAll`
@@ -64,4 +67,55 @@ export async function truncateAll(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRawUnsafe(
     `TRUNCATE TABLE ${BUSINESS_TABLES} RESTART IDENTITY CASCADE`,
   );
+}
+
+function baseCompanyInput(overrides?: Partial<CreateCompanyInput>): CreateCompanyInput {
+  return {
+    name: 'Acme Foods',
+    billingContactName: 'Ann',
+    billingEmail: 'billing@acme.test',
+    billingPhone: null,
+    billingAddress: null,
+    domains: ['acme.test'],
+    addresses: [
+      {
+        label: 'HQ',
+        line1: '1 Main St',
+        line2: null,
+        city: 'Mumbai',
+        region: null,
+        postalCode: '400001',
+        country: 'IN',
+        isDefault: true,
+      },
+    ],
+    ownerName: 'Anil Owner',
+    ownerEmail: 'anil@acme.test',
+    workingDays: [1, 2, 3, 4, 5],
+    defaultDeliveryMinute: 720,
+    dispatchLeadMinutes: 60,
+    defaultPackagingTypeId: '00000000-0000-0000-0000-000000000000',
+    driverInstructions: null,
+    defaultDriverId: null,
+    priceTierId: null,
+    ...overrides,
+  };
+}
+
+/**
+ * Create a company through the real service (plus one packaging
+ * type fixture). Shared by module specs so fixtures stay
+ * reconcilable; never import from another *.spec.ts file.
+ */
+export async function createTestCompany(
+  prisma: PrismaService,
+  overrides?: Partial<CreateCompanyInput> & { packagingName?: string },
+): Promise<{ id: string }> {
+  const { packagingName, ...rest } = overrides ?? {};
+  const packaging = await prisma.packagingType.create({
+    data: { name: packagingName ?? 'Box' },
+    select: { id: true },
+  });
+  const companies = new CompaniesService(prisma);
+  return companies.createCompany(baseCompanyInput({ ...rest, defaultPackagingTypeId: packaging.id }));
 }

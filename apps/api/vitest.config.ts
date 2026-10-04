@@ -14,5 +14,10 @@ export default defineConfig({
     // must not run in parallel against each other.
     fileParallelism: false,
     globalSetup: ['./test/global-setup.ts'],
+    // Remote-database round trips plus bcrypt work routinely exceed
+    // Vitest's 5s/10s defaults under pooler latency; a timeout here
+    // must mean a hang, not a slow query.
+    testTimeout: 30000,
+    hookTimeout: 30000,
   },
 });

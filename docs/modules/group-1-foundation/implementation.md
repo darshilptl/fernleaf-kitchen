@@ -101,6 +101,7 @@ Module 2 — create:
 | `POST /dishes/:id/groups`, `PATCH /groups/:groupId`, `DELETE /groups/:groupId` | `catalogue.manage` | group schema (`usesPortions` must be false; `sizes` must be absent/empty) | group | `CATALOGUE_PORTIONS_DEFERRED` 409, `PERMISSION_DENIED` 403 |
 | `POST /groups/:groupId/options` (attach), `DELETE /groups/:groupId/options/:optionId` | `catalogue.manage` | `{ optionId, sortOrder? }` | group | `CATALOGUE_OPTION_MISSING` 404, `PERMISSION_DENIED` 403 |
 | `GET /staff` (module 1b) | `staff.manage` | query `{ page, pageSize (max 100) }` | paginated staff (id, name, email, roleId, isActive — never passwordHash) | `PERMISSION_DENIED` 403 |
+| `GET /staff/roles` (module 1b) | `staff.manage` | — | role options for the dialog, id + display name only | `PERMISSION_DENIED` 403 |
 | `POST /staff` (module 1b) | `staff.manage` | `{ name, email, roleId, password }` | staff row | `STAFF_EMAIL_DUPLICATE` 409, `PERMISSION_DENIED` 403 |
 | `PATCH /staff/:id/role` (module 1b) | `staff.manage` | `{ roleId }` | staff row | `STAFF_NOT_FOUND` 404, `PERMISSION_DENIED` 403 |
 | `POST /staff/:id/deactivate`, `POST /staff/:id/activate` (module 1b) | `staff.manage` | — | staff row | `STAFF_SELF_DEACTIVATE` 409, `STAFF_NOT_FOUND` 404, `PERMISSION_DENIED` 403 |
