@@ -81,6 +81,10 @@ Format: ID, PDF section, ambiguity, decision, why, alternative.
 | D-74 | 4.9       | Invoiced orders that change                           | Invoice total frozen. Invoiced orders cannot be cancelled or rejected until removed from an unpaid invoice. Paid invoices immutable. Removing the last order deletes the invoice. Short delivery not modelled. Paying is one-way. | PDF requires a documented decision                         | Credit notes               |
 | D-75 | 3, 4.8    | Admin in the driver picker                            | Admin gets every key except `deliveries.assignable`                                                                                                                                                                               | Admins are not drivers                                     | Filter in code             |
 | D-76 | 4.1       | Currency display                                      | `$` with two decimals                                                                                                                                                                                                             | The PDF examples use `$`                                   | Configurable currency      |
+| D-78 | 3         | Staff password minimum length                         | Minimum 8 characters on staff creation                                                                | PDF silent; `Test@1234` sets the bar; login stays format-only (min 1) so wrong passwords cannot be probed | No minimum                 |
+| D-79 | 2, 3      | Seed accounts drift (password/role changed by hand)   | The four seed accounts are re-asserted on every boot: password, role, active | Reviewer logins always work; settings row stays insert-if-missing so cut-off edits survive | Seed once only             |
+
+D-77 (marker for demo data) with the text above.
 
 ## Amendments applied after the first audit (A-1 to A-8)
 
