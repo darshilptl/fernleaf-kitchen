@@ -58,7 +58,7 @@ type FooterColumnProps = {
 function FooterColumn({ heading, links }: FooterColumnProps) {
   return (
     <div>
-      <p className="text-caption font-semibold uppercase text-foreground-subtle">
+      <p className="text-caption font-semibold text-foreground-subtle uppercase">
         {heading}
       </p>
       <ul className="mt-2 space-y-2">
@@ -98,7 +98,8 @@ export async function Footer() {
           <div className="max-w-xs shrink-0">
             <FooterLogo />
             <p className="mt-2 text-sm leading-relaxed font-medium text-foreground-subtle">
-              Production-grade products built for startups and enterprises.
+              The operations panel for Fernleaf Kitchen's corporate meal
+              programs.
             </p>
           </div>
 
@@ -121,7 +122,7 @@ export async function Footer() {
         <p className="text-caption font-medium text-foreground-subtle">
           © {year} Fernleaf Kitchen
         </p>
-        <p className="flex items-center gap-2 text-caption text-foreground-muted">
+        <p className="text-caption flex items-center gap-2 text-foreground-muted">
           <span
             aria-hidden
             className={

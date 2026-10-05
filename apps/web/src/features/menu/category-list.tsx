@@ -72,8 +72,8 @@ export function CategoryList(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-6">
         <div>
           <h1 className="heading-sm">Menu</h1>
           <p className="description-sm">Categories and dish placements, in serving order.</p>
@@ -106,7 +106,7 @@ export function CategoryList(): React.JSX.Element {
             render: (row) => {
               const index = rows.findIndex((entry) => entry.id === row.id);
               return (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"

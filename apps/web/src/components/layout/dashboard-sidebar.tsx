@@ -61,7 +61,7 @@ export function DashboardSidebar({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent className="flex flex-col gap-6 py-4">
           {groups.map((group) => (
             <SidebarGroup key={group.label}>
               <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
@@ -103,7 +103,7 @@ export function DashboardSidebar({
       </Sidebar>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b">
-          <div className="flex items-center gap-2 px-4">
+          <div className="flex items-center gap-2 px-6">
             <SidebarTrigger className="-ml-1" />
             {activeLabel !== undefined && (
               <span className="text-caption text-foreground-muted">
@@ -112,7 +112,9 @@ export function DashboardSidebar({
             )}
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-6 md:p-8">
+          <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-8">{children}</div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   )
