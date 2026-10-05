@@ -19,10 +19,11 @@ import { DispatchModule } from './modules/dispatch/dispatch.module.js';
 import { KitchenModule } from './modules/kitchen/kitchen.module.js';
 import { DashboardsModule } from './modules/dashboards/dashboards.module.js';
 import { ensureBaseData } from './modules/auth/base-data.js';
-import { seedPart2 } from '../prisma/seed/part-2.js';
+import { DemoDataModule } from './modules/demo-data/demo-data.module.js';
+import { DemoDataService } from './modules/demo-data/demo-data.service.js';
 
 @Module({
-  imports: [AuthModule, CatalogueModule, CompaniesModule, EmployeesModule, MenuModule, PricingModule, StaffModule, SettingsModule, OrdersModule, KitchenModule, DispatchModule, BillingModule, DashboardsModule],
+  imports: [AuthModule, CatalogueModule, CompaniesModule, EmployeesModule, MenuModule, PricingModule, StaffModule, SettingsModule, OrdersModule, KitchenModule, DispatchModule, BillingModule, DashboardsModule, DemoDataModule],
   controllers: [HealthController],
   providers: [
     PrismaService,
@@ -33,14 +34,17 @@ import { seedPart2 } from '../prisma/seed/part-2.js';
 export class AppModule implements OnModuleInit {
   private readonly logger = new Logger(AppModule.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly demoData: DemoDataService,
+  ) {}
 
   async onModuleInit(): Promise<void> {
     await ensureBaseData(this.prisma);
     // Boot must never crash serving: demo seeding is best-effort here
     // (the admin refresh action retries it); failures log loudly.
     try {
-      await seedPart2(this.prisma);
+      await this.demoData.ensureDemoData();
     } catch (error) {
       this.logger.error('Demo seed failed on boot', error instanceof Error ? error.stack : undefined);
     }

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DomainError, fromDbDate } from '@repo/shared';
 import type { CalendarDate, KitchenHolidayInput, SettingsInput } from '@repo/shared';
-import { seedPart2 } from '../../../prisma/seed/part-2.js';
+import { DemoDataService } from '../demo-data/demo-data.service.js';
 import { PrismaService } from '../../database/prisma.service.js';
 import { logAction } from '../../common/logging/logging.interceptor.js';
 
@@ -17,7 +17,10 @@ const SETTINGS_ID = 1;
 export class SettingsService {
   private readonly logger = new Logger(SettingsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly demoData: DemoDataService,
+  ) {}
 
   async getSettings(): Promise<{
     kitchenWorkingDays: number[];
@@ -97,7 +100,7 @@ export class SettingsService {
    * judge by clicking; empty screens hurt).
    */
   async refreshDemoData(): Promise<{ orders: number; invoices: number; skipped: boolean }> {
-    const result = await seedPart2(this.prisma);
+    const result = await this.demoData.ensureDemoData();
     logAction(this.logger, 'settings.demo-refresh', {
       orders: result.orders,
       invoices: result.invoices,

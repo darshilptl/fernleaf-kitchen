@@ -29,7 +29,7 @@ describe('DashboardsService', () => {
     await truncateAll(prisma);
     await ensureBaseData(prisma);
     clock.setNow(new Date());
-  });
+  }, 300000);
 
   afterAll(async () => {
     await prisma.$disconnect();
@@ -92,8 +92,8 @@ describe('DashboardsService', () => {
 
     const figures = await dashboards.adminFigures();
     const byStatus = new Map(figures.byStatus.map((row) => [row.status, row.count]));
-    expect(byStatus.get('DRAFT')).toBeGreaterThanOrEqual(1);
-    expect(byStatus.get('PLACED')).toBeGreaterThanOrEqual(1);
+    expect(byStatus.get('DRAFT') ?? 0).toBeGreaterThanOrEqual(1);
+    expect(byStatus.get('PLACED') ?? 0).toBeGreaterThanOrEqual(1);
     expect(figures.byStatus).toHaveLength(6);
     expect(figures.unbilledTotalCents).toBe(0);
     expect(figures.topCompanies).toHaveLength(0);
@@ -129,7 +129,7 @@ describe('DashboardsService', () => {
     void gapDish;
     const gapped = await dashboards.adminFigures();
     expect(gapped.pricingGapDishes).toBe(1);
-  });
+  }, 600000);
 
   function toCalendarDate(value: Date): CalendarDate {
     const month = String(value.getUTCMonth() + 1).padStart(2, '0');

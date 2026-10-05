@@ -2,6 +2,15 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { PrismaService } from '../../database/prisma.service.js';
 import { requireTestDatabaseUrl, truncateAll } from '../../../test/db.js';
 import { ensureBaseData } from '../auth/base-data.js';
+import { ClockService } from '../../common/clock/clock.service.js';
+import { BillingService } from '../billing/billing.service.js';
+import { DispatchService } from '../dispatch/dispatch.service.js';
+import { KitchenService } from '../kitchen/kitchen.service.js';
+import { OrdersService } from '../orders/orders.service.js';
+import { PricingService } from '../pricing/pricing.service.js';
+import { StaffService } from '../staff/staff.service.js';
+import { MenuService } from '../menu/menu.service.js';
+import { DemoDataService } from '../demo-data/demo-data.service.js';
 import { SettingsService } from './settings.service.js';
 
 /**
@@ -11,7 +20,22 @@ import { SettingsService } from './settings.service.js';
  */
 describe('SettingsService', () => {
   const prisma = new PrismaService(requireTestDatabaseUrl());
-  const settings = new SettingsService(prisma);
+  const clock = new ClockService();
+  const pricing = new PricingService(prisma);
+  const settings = new SettingsService(
+    prisma,
+    new DemoDataService(
+      prisma,
+      pricing,
+      new OrdersService(prisma, pricing, clock),
+      new KitchenService(prisma, clock),
+      new DispatchService(prisma, clock),
+      new BillingService(prisma, clock),
+      new StaffService(prisma),
+      new MenuService(prisma, pricing),
+      clock,
+    ),
+  );
 
   beforeEach(async () => {
     await truncateAll(prisma);
