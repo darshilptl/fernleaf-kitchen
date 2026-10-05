@@ -475,6 +475,6 @@ only, no audit tables) per D-80.
 - The cut-off scheduler runs every minute and once on startup (`cutoff-scheduler.ts`), which covers
   free-tier servers that sleep; free-tier cold starts delay the first request but do not lose
   cut-off processing because the startup run catches up.
-- Placeholders: use {{LIVE_APP_URL}} for the live app, {{API_URL}} for the API, {{REPO_URL}} for
+- Placeholders: use [{{LIVE_APP_URL}} ](https://kitchen-fernleaf.vercel.app/) for the live app, [{{API_URL}}](https://kitchen-fernleaf.vercel.app/api/health) for the API, [{{REPO_URL}}](https://github.com/darshilptl/fernleaf-kitchen) for
   the repository. No secrets are stored in the repo; `JWT_SECRET` and `DATABASE_URL` are environment
   only.
